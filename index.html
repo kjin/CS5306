@@ -1,14 +1,14 @@
 <html>
   <head>
     <!-- stylesheet -->
-    <link href="/literallycanvas/css/literallycanvas.css" rel="stylesheet">
+    <link href="/static/css/literallycanvas.css" rel="stylesheet">
 
     <!-- dependency: React.js -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-with-addons.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
 
     <!-- Literally Canvas -->
-    <script src="/literallycanvas/js/literallycanvas.js"></script>
+    <script src="/static/js/literallycanvas.js"></script>
   </head>
   <body>
     <!-- where the widget goes. you can do CSS to it. -->
@@ -19,14 +19,8 @@
         // Look ma, no jQuery!
         LC.init(
             document.getElementsByClassName('literally')[0],
-            {imageURLPrefix: '/literallycanvas/img'}
+            {imageURLPrefix: '/static/img'}
         );
-
-        /* or if you just love jQuery,
-            $('.literally').literallycanvas({imageURLPrefix: '/static/img'})
-            or
-            LC.init($('.literally').get(0), {imageURLPrefix: '/static/img'})
-        */
     </script>
   </body>
 </html>
