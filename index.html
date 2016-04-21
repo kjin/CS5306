@@ -37,8 +37,8 @@
     <script src="static/js/jquery-1.8.2.js"></script>
 
     <script type="text/javascript">
-      // var serverAddress = "http://localhost:8080";
-      var serverAddress = "http://52.24.144.42";
+      var serverAddress = "http://localhost:8080";
+      // var serverAddress = "http://52.24.144.42";
 
       var lc = LC.init(document.getElementById("lc"), {
         imageURLPrefix: 'static/img',
@@ -64,7 +64,7 @@
 
       function onLoadSuccess(result) {
         document.getElementById("messageBox").innerHTML += "Load success.<br>";
-        lc.loadSnapshot(JSON.parse(snapshot));
+        lc.loadSnapshot(JSON.parse(result));
       }
 
       function refresh() {
