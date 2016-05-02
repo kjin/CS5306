@@ -8,7 +8,8 @@
 
     <style type="text/css">
       .fs-container {
-        width: 320px;
+        width: 880px;
+        height: 640px;
         margin: auto;
       }
 
@@ -25,9 +26,16 @@
       <div id="lc"></div>
     </div>
     <div align="center">
-      <button onclick="save()">Save Me</button>
-      <button onclick="load()">Load Me</button>
-      <button onclick="refresh()">Clear</button>
+      <?php
+        if (isset($_GET["id"])) {
+          $id = $_GET["id"];
+        }
+        else {
+          $id = 0;
+        }
+        echo "<button onclick=\"save($id)\">Save Me</button>";
+        echo "<button onclick=\"load($id)\">Load Me</button>";
+      ?>
     </div>
     <div id="messageBox"></div>
 
@@ -37,7 +45,7 @@
     <script src="static/js/jquery-1.8.2.js"></script>
 
     <script type="text/javascript">
-      var serverAddress = "http://localhost:8080";
+      var serverAddress = "https://cs-5306-kelvinjin.c9users.io";
       // var serverAddress = "http://52.24.144.42";
 
       var lc = LC.init(document.getElementById("lc"), {
@@ -49,26 +57,22 @@
 
       var blank = lc.getSnapshot();
 
-      function save() {
+      function save(id) {
         var snapshot = lc.getSnapshot();
-        jQuery.post(serverAddress + "/receiveData.php", JSON.stringify(snapshot), onSaveSuccess);
+        jQuery.post(serverAddress + "/receiveData.php?id=" + id, JSON.stringify(snapshot), onSaveSuccess);
       }
 
       function onSaveSuccess() {
         document.getElementById("messageBox").innerHTML += "Save success.<br>";
       }
 
-      function load() {
-        jQuery.get(serverAddress + "/sendData.php", "", onLoadSuccess);
+      function load(id) {
+        jQuery.get(serverAddress + "/sendData.php?id=" + id, "", onLoadSuccess);
       }
 
       function onLoadSuccess(result) {
         document.getElementById("messageBox").innerHTML += "Load success.<br>";
         lc.loadSnapshot(JSON.parse(result));
-      }
-
-      function refresh() {
-        lc.loadSnapshot(blank);
       }
     </script>
   </body>
