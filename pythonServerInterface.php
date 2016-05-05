@@ -1,6 +1,11 @@
 <?php
-  function sendAndReceive($data)
+  function makePythonModuleCall($function, $args)
   {
+    $data = $function;
+    foreach ($args as $element)
+    {
+      $data .= "," . $element;
+    }
     $mySocket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
     if (socket_connect($mySocket, '127.0.0.1', 9876))
     {
@@ -18,5 +23,6 @@
         }
       }
     }
+    return "Python server is not running.";
   }
 ?>

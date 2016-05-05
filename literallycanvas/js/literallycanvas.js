@@ -1,4 +1,129 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.LC = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+module.exports = require('react/lib/ReactComponentWithPureRenderMixin');
+},{"react/lib/ReactComponentWithPureRenderMixin":2}],2:[function(require,module,exports){
+/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactComponentWithPureRenderMixin
+ */
+
+'use strict';
+
+var shallowCompare = require('./shallowCompare');
+
+/**
+ * If your React component's render function is "pure", e.g. it will render the
+ * same result given the same props and state, provide this Mixin for a
+ * considerable performance boost.
+ *
+ * Most React components have pure render functions.
+ *
+ * Example:
+ *
+ *   var ReactComponentWithPureRenderMixin =
+ *     require('ReactComponentWithPureRenderMixin');
+ *   React.createClass({
+ *     mixins: [ReactComponentWithPureRenderMixin],
+ *
+ *     render: function() {
+ *       return <div className={this.props.className}>foo</div>;
+ *     }
+ *   });
+ *
+ * Note: This only checks shallow equality for props and state. If these contain
+ * complex data structures this mixin may have false-negatives for deeper
+ * differences. Only mixin to components which have simple props and state, or
+ * use `forceUpdate()` when you know deep data structures have changed.
+ */
+var ReactComponentWithPureRenderMixin = {
+  shouldComponentUpdate: function (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
+  }
+};
+
+module.exports = ReactComponentWithPureRenderMixin;
+},{"./shallowCompare":3}],3:[function(require,module,exports){
+/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+* @providesModule shallowCompare
+*/
+
+'use strict';
+
+var shallowEqual = require('fbjs/lib/shallowEqual');
+
+/**
+ * Does a shallow comparison for props and state.
+ * See ReactComponentWithPureRenderMixin
+ */
+function shallowCompare(instance, nextProps, nextState) {
+  return !shallowEqual(instance.props, nextProps) || !shallowEqual(instance.state, nextState);
+}
+
+module.exports = shallowCompare;
+},{"fbjs/lib/shallowEqual":4}],4:[function(require,module,exports){
+/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule shallowEqual
+ * @typechecks
+ * 
+ */
+
+'use strict';
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * Performs equality by iterating through keys on an object and returning false
+ * when any key has values which are not strictly equal between the arguments.
+ * Returns true when the values of all keys are strictly equal.
+ */
+function shallowEqual(objA, objB) {
+  if (objA === objB) {
+    return true;
+  }
+
+  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+    return false;
+  }
+
+  var keysA = Object.keys(objA);
+  var keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+
+  // Test for A's keys different from B.
+  var bHasOwnProperty = hasOwnProperty.bind(objB);
+  for (var i = 0; i < keysA.length; i++) {
+    if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+module.exports = shallowEqual;
+},{}],5:[function(require,module,exports){
 var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, ref, renderShapeToContext, renderShapeToSVG, renderSnapshotToImage, renderSnapshotToSVG, shapeToJSON, util,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   slice = [].slice,
@@ -845,7 +970,7 @@ module.exports = LiterallyCanvas = (function() {
 })();
 
 
-},{"../tools/Pencil":24,"./actions":3,"./bindEvents":4,"./canvasRenderer":5,"./math":10,"./renderSnapshotToImage":11,"./renderSnapshotToSVG":12,"./shapes":13,"./svgRenderer":14,"./util":15}],2:[function(require,module,exports){
+},{"../tools/Pencil":48,"./actions":7,"./bindEvents":8,"./canvasRenderer":9,"./math":14,"./renderSnapshotToImage":15,"./renderSnapshotToSVG":16,"./shapes":17,"./svgRenderer":18,"./util":19}],6:[function(require,module,exports){
 var TextRenderer, getLinesToRender, getNextLine, parseFontString;
 
 require('./fontmetrics.js');
@@ -1049,7 +1174,7 @@ TextRenderer = (function() {
 module.exports = TextRenderer;
 
 
-},{"./fontmetrics.js":7}],3:[function(require,module,exports){
+},{"./fontmetrics.js":11}],7:[function(require,module,exports){
 var AddShapeAction, ClearAction;
 
 ClearAction = (function() {
@@ -1132,7 +1257,7 @@ module.exports = {
 };
 
 
-},{}],4:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var bindEvents, buttonIsDown, coordsForTouchEvent, position;
 
 coordsForTouchEvent = function(el, e) {
@@ -1266,7 +1391,7 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
 };
 
 
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var _drawRawLinePath, defineCanvasRenderer, drawErasedLinePath, drawErasedLinePathLatest, drawLinePath, drawLinePathLatest, lineEndCapShapes, noop, renderShapeToCanvas, renderShapeToContext, renderers;
 
 lineEndCapShapes = require('./lineEndCapShapes');
@@ -1527,7 +1652,7 @@ module.exports = {
 };
 
 
-},{"./lineEndCapShapes":8}],6:[function(require,module,exports){
+},{"./lineEndCapShapes":12}],10:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -1550,7 +1675,7 @@ module.exports = {
   tools: [require('../tools/Pencil'), require('../tools/Eraser'), require('../tools/Line'), require('../tools/Rectangle'), require('../tools/Ellipse'), require('../tools/Text'), require('../tools/Polygon'), require('../tools/Pan'), require('../tools/Eyedropper')]
 };
 
-},{"../tools/Ellipse":19,"../tools/Eraser":20,"../tools/Eyedropper":21,"../tools/Line":22,"../tools/Pan":23,"../tools/Pencil":24,"../tools/Polygon":25,"../tools/Rectangle":26,"../tools/Text":28}],7:[function(require,module,exports){
+},{"../tools/Ellipse":43,"../tools/Eraser":44,"../tools/Eyedropper":45,"../tools/Line":46,"../tools/Pan":47,"../tools/Pencil":48,"../tools/Polygon":49,"../tools/Rectangle":50,"../tools/Text":52}],11:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1749,7 +1874,7 @@ module.exports = {
   };
 })();
 
-},{}],8:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = {
   arrow: (function() {
     var getPoints;
@@ -1800,7 +1925,7 @@ module.exports = {
 };
 
 
-},{}],9:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var _, localize, strings;
 
 strings = {};
@@ -1821,7 +1946,7 @@ module.exports = {
 };
 
 
-},{}],10:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var Point, _slope, math, normals, unit, util;
 
 Point = require('./shapes').Point;
@@ -1910,7 +2035,7 @@ math.scalePositionScalar = function(val, viewportSize, oldScale, newScale) {
 module.exports = math;
 
 
-},{"./shapes":13,"./util":15}],11:[function(require,module,exports){
+},{"./shapes":17,"./util":19}],15:[function(require,module,exports){
 var INFINITE, JSONToShape, renderWatermark, util;
 
 util = require('./util');
@@ -2009,7 +2134,7 @@ module.exports = function(snapshot, opts) {
 };
 
 
-},{"./shapes":13,"./util":15}],12:[function(require,module,exports){
+},{"./shapes":17,"./util":19}],16:[function(require,module,exports){
 var INFINITE, JSONToShape, util;
 
 util = require('./util');
@@ -2084,7 +2209,7 @@ module.exports = function(snapshot, opts) {
 };
 
 
-},{"./shapes":13,"./util":15}],13:[function(require,module,exports){
+},{"./shapes":17,"./util":19}],17:[function(require,module,exports){
 var JSONToShape, LinePath, TextRenderer, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _refine, bspline, createShape, defineCanvasRenderer, defineSVGRenderer, defineShape, lineEndCapShapes, linePathFuncs, ref, ref1, renderShapeToContext, renderShapeToSVG, shapeToJSON, shapes, util;
 
 util = require('./util');
@@ -3008,7 +3133,7 @@ module.exports = {
 };
 
 
-},{"./TextRenderer":2,"./canvasRenderer":5,"./lineEndCapShapes":8,"./svgRenderer":14,"./util":15}],14:[function(require,module,exports){
+},{"./TextRenderer":6,"./canvasRenderer":9,"./lineEndCapShapes":12,"./svgRenderer":18,"./util":19}],18:[function(require,module,exports){
 var defineSVGRenderer, lineEndCapShapes, renderShapeToSVG, renderers;
 
 lineEndCapShapes = require('./lineEndCapShapes');
@@ -3149,7 +3274,7 @@ module.exports = {
 };
 
 
-},{"./lineEndCapShapes":8}],15:[function(require,module,exports){
+},{"./lineEndCapShapes":12}],19:[function(require,module,exports){
 var renderShapeToContext, renderShapeToSVG, slice, util,
   slice1 = [].slice;
 
@@ -3366,7 +3491,7 @@ util = {
 module.exports = util;
 
 
-},{"./canvasRenderer":5,"./svgRenderer":14}],16:[function(require,module,exports){
+},{"./canvasRenderer":9,"./svgRenderer":18}],20:[function(require,module,exports){
 'use strict';
 
 (function () {
@@ -3382,7 +3507,7 @@ module.exports = util;
   window.CustomEvent = CustomEvent;
 })();
 
-},{}],17:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 var hasWarned = false;
@@ -3397,8 +3522,8 @@ if (!CanvasRenderingContext2D.prototype.setLineDash) {
 }
 module.exports = null;
 
-},{}],18:[function(require,module,exports){
-var LiterallyCanvasModel, baseTools, canvasRenderer, conversion, defaultImageURLPrefix, defaultOptions, defaultTools, init, initWithoutGUI, localize, registerJQueryPlugin, renderSnapshotToImage, renderSnapshotToSVG, setDefaultImageURLPrefix, shapes, svgRenderer, tools, util;
+},{}],22:[function(require,module,exports){
+var LiterallyCanvasModel, LiterallyCanvasReactComponent, baseTools, canvasRenderer, conversion, defaultImageURLPrefix, defaultOptions, defaultTools, defineOptionsStyle, init, initReactDOM, initWithoutGUI, localize, registerJQueryPlugin, renderSnapshotToImage, renderSnapshotToSVG, setDefaultImageURLPrefix, shapes, svgRenderer, tools, util;
 
 require('./ie_customevent');
 
@@ -3421,6 +3546,24 @@ renderSnapshotToImage = require('./core/renderSnapshotToImage');
 renderSnapshotToSVG = require('./core/renderSnapshotToSVG');
 
 localize = require('./core/localization').localize;
+
+LiterallyCanvasReactComponent = require('./reactGUI/LiterallyCanvas');
+
+initReactDOM = require('./reactGUI/initDOM');
+
+require('./optionsStyles/font');
+
+require('./optionsStyles/stroke-width');
+
+require('./optionsStyles/line-options-and-stroke-width');
+
+require('./optionsStyles/polygon-and-stroke-width');
+
+require('./optionsStyles/stroke-or-fill');
+
+require('./optionsStyles/null');
+
+defineOptionsStyle = require('./optionsStyles/optionsStyles').defineOptionsStyle;
 
 conversion = {
   snapshotToShapes: function(snapshot) {
@@ -3479,7 +3622,7 @@ init = function(el, opts) {
     child = ref[i];
     el.removeChild(child);
   }
-  return initWithoutGUI(el, opts);
+  return require('./reactGUI/initDOM')(el, opts);
 };
 
 initWithoutGUI = function(el, opts) {
@@ -3539,6 +3682,8 @@ module.exports = {
   tools: tools,
   setDefaultImageURLPrefix: setDefaultImageURLPrefix,
   defaultTools: defaultTools,
+  defineOptionsStyle: defineOptionsStyle,
+  LiterallyCanvasReactComponent: LiterallyCanvasReactComponent,
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
   JSONToShape: shapes.JSONToShape,
@@ -3558,7 +3703,1535 @@ module.exports = {
 };
 
 
-},{"./core/LiterallyCanvas":1,"./core/canvasRenderer":5,"./core/defaultOptions":6,"./core/localization":9,"./core/renderSnapshotToImage":11,"./core/renderSnapshotToSVG":12,"./core/shapes":13,"./core/svgRenderer":14,"./core/util":15,"./ie_customevent":16,"./ie_setLineDash":17,"./tools/Ellipse":19,"./tools/Eraser":20,"./tools/Eyedropper":21,"./tools/Line":22,"./tools/Pan":23,"./tools/Pencil":24,"./tools/Polygon":25,"./tools/Rectangle":26,"./tools/SelectShape":27,"./tools/Text":28,"./tools/base":29}],19:[function(require,module,exports){
+},{"./core/LiterallyCanvas":5,"./core/canvasRenderer":9,"./core/defaultOptions":10,"./core/localization":13,"./core/renderSnapshotToImage":15,"./core/renderSnapshotToSVG":16,"./core/shapes":17,"./core/svgRenderer":18,"./core/util":19,"./ie_customevent":20,"./ie_setLineDash":21,"./optionsStyles/font":23,"./optionsStyles/line-options-and-stroke-width":24,"./optionsStyles/null":25,"./optionsStyles/optionsStyles":26,"./optionsStyles/polygon-and-stroke-width":27,"./optionsStyles/stroke-or-fill":28,"./optionsStyles/stroke-width":29,"./reactGUI/LiterallyCanvas":32,"./reactGUI/initDOM":42,"./tools/Ellipse":43,"./tools/Eraser":44,"./tools/Eyedropper":45,"./tools/Line":46,"./tools/Pan":47,"./tools/Pencil":48,"./tools/Polygon":49,"./tools/Rectangle":50,"./tools/SelectShape":51,"./tools/Text":52,"./tools/base":53}],23:[function(require,module,exports){
+var ALL_FONTS, FONT_NAME_TO_VALUE, MONOSPACE_FONTS, OTHER_FONTS, React, SANS_SERIF_FONTS, SERIF_FONTS, _, defineOptionsStyle, i, j, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, value;
+
+React = require('../reactGUI/React-shim');
+
+defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
+
+_ = require('../core/localization')._;
+
+SANS_SERIF_FONTS = [['Arial', 'Arial,"Helvetica Neue",Helvetica,sans-serif'], ['Arial Black', '"Arial Black","Arial Bold",Gadget,sans-serif'], ['Arial Narrow', '"Arial Narrow",Arial,sans-serif'], ['Gill Sans', '"Gill Sans","Gill Sans MT",Calibri,sans-serif'], ['Helvetica', '"Helvetica Neue",Helvetica,Arial,sans-serif'], ['Impact', 'Impact,Haettenschweiler,"Franklin Gothic Bold",Charcoal,"Helvetica Inserat","Bitstream Vera Sans Bold","Arial Black",sans-serif'], ['Tahoma', 'Tahoma,Verdana,Segoe,sans-serif'], ['Trebuchet MS', '"Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif'], ['Verdana', 'Verdana,Geneva,sans-serif']].map(function(arg) {
+  var name, value;
+  name = arg[0], value = arg[1];
+  return {
+    name: _(name),
+    value: value
+  };
+});
+
+SERIF_FONTS = [['Baskerville', 'Baskerville,"Baskerville Old Face","Hoefler Text",Garamond,"Times New Roman",serif'], ['Garamond', 'Garamond,Baskerville,"Baskerville Old Face","Hoefler Text","Times New Roman",serif'], ['Georgia', 'Georgia,Times,"Times New Roman",serif'], ['Hoefler Text', '"Hoefler Text","Baskerville Old Face",Garamond,"Times New Roman",serif'], ['Lucida Bright', '"Lucida Bright",Georgia,serif'], ['Palatino', 'Palatino,"Palatino Linotype","Palatino LT STD","Book Antiqua",Georgia,serif'], ['Times New Roman', 'TimesNewRoman,"Times New Roman",Times,Baskerville,Georgia,serif']].map(function(arg) {
+  var name, value;
+  name = arg[0], value = arg[1];
+  return {
+    name: _(name),
+    value: value
+  };
+});
+
+MONOSPACE_FONTS = [['Consolas/Monaco', 'Consolas,monaco,"Lucida Console",monospace'], ['Courier New', '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'], ['Lucida Sans Typewriter', '"Lucida Sans Typewriter","Lucida Console",monaco,"Bitstream Vera Sans Mono",monospace']].map(function(arg) {
+  var name, value;
+  name = arg[0], value = arg[1];
+  return {
+    name: _(name),
+    value: value
+  };
+});
+
+OTHER_FONTS = [['Copperplate', 'Copperplate,"Copperplate Gothic Light",fantasy'], ['Papyrus', 'Papyrus,fantasy'], ['Script', '"Brush Script MT",cursive']].map(function(arg) {
+  var name, value;
+  name = arg[0], value = arg[1];
+  return {
+    name: _(name),
+    value: value
+  };
+});
+
+ALL_FONTS = [[_('Sans Serif'), SANS_SERIF_FONTS], [_('Serif'), SERIF_FONTS], [_('Monospace'), MONOSPACE_FONTS], [_('Other'), OTHER_FONTS]];
+
+FONT_NAME_TO_VALUE = {};
+
+for (i = 0, len = SANS_SERIF_FONTS.length; i < len; i++) {
+  ref = SANS_SERIF_FONTS[i], name = ref.name, value = ref.value;
+  FONT_NAME_TO_VALUE[name] = value;
+}
+
+for (j = 0, len1 = SERIF_FONTS.length; j < len1; j++) {
+  ref1 = SERIF_FONTS[j], name = ref1.name, value = ref1.value;
+  FONT_NAME_TO_VALUE[name] = value;
+}
+
+for (l = 0, len2 = MONOSPACE_FONTS.length; l < len2; l++) {
+  ref2 = MONOSPACE_FONTS[l], name = ref2.name, value = ref2.value;
+  FONT_NAME_TO_VALUE[name] = value;
+}
+
+for (m = 0, len3 = OTHER_FONTS.length; m < len3; m++) {
+  ref3 = OTHER_FONTS[m], name = ref3.name, value = ref3.value;
+  FONT_NAME_TO_VALUE[name] = value;
+}
+
+defineOptionsStyle('font', React.createClass({
+  displayName: 'FontOptions',
+  getInitialState: function() {
+    return {
+      isItalic: false,
+      isBold: false,
+      fontName: 'Helvetica',
+      fontSizeIndex: 4
+    };
+  },
+  getFontSizes: function() {
+    return [9, 10, 12, 14, 18, 24, 36, 48, 64, 72, 96, 144, 288];
+  },
+  updateTool: function(newState) {
+    var fontSize, items, k;
+    if (newState == null) {
+      newState = {};
+    }
+    for (k in this.state) {
+      if (!(k in newState)) {
+        newState[k] = this.state[k];
+      }
+    }
+    fontSize = this.getFontSizes()[newState.fontSizeIndex];
+    items = [];
+    if (newState.isItalic) {
+      items.push('italic');
+    }
+    if (newState.isBold) {
+      items.push('bold');
+    }
+    items.push(fontSize + "px");
+    items.push(FONT_NAME_TO_VALUE[newState.fontName]);
+    this.props.lc.tool.font = items.join(' ');
+    return this.props.lc.trigger('setFont', items.join(' '));
+  },
+  handleFontSize: function(event) {
+    var newState;
+    newState = {
+      fontSizeIndex: event.target.value
+    };
+    this.setState(newState);
+    return this.updateTool(newState);
+  },
+  handleFontFamily: function(event) {
+    var newState;
+    newState = {
+      fontName: event.target.selectedOptions[0].innerHTML
+    };
+    this.setState(newState);
+    return this.updateTool(newState);
+  },
+  handleItalic: function(event) {
+    var newState;
+    newState = {
+      isItalic: !this.state.isItalic
+    };
+    this.setState(newState);
+    return this.updateTool(newState);
+  },
+  handleBold: function(event) {
+    var newState;
+    newState = {
+      isBold: !this.state.isBold
+    };
+    this.setState(newState);
+    return this.updateTool(newState);
+  },
+  componentDidMount: function() {
+    return this.updateTool();
+  },
+  render: function() {
+    var br, div, input, label, lc, optgroup, option, ref4, select, span;
+    lc = this.props.lc;
+    ref4 = React.DOM, div = ref4.div, input = ref4.input, select = ref4.select, option = ref4.option, br = ref4.br, label = ref4.label, span = ref4.span, optgroup = ref4.optgroup;
+    return div({
+      className: 'lc-font-settings'
+    }, select({
+      value: this.state.fontSizeIndex,
+      onChange: this.handleFontSize
+    }, this.getFontSizes().map((function(_this) {
+      return function(size, ix) {
+        return option({
+          value: ix,
+          key: ix
+        }, size + "px");
+      };
+    })(this))), select({
+      value: this.state.fontName,
+      onChange: this.handleFontFamily
+    }, ALL_FONTS.map((function(_this) {
+      return function(arg) {
+        var fonts, label;
+        label = arg[0], fonts = arg[1];
+        return optgroup({
+          key: label,
+          label: label
+        }, fonts.map(function(family, ix) {
+          return option({
+            value: family.name,
+            key: ix
+          }, family.name);
+        }));
+      };
+    })(this))), span({}, label({
+      htmlFor: 'italic'
+    }, _("italic")), input({
+      type: 'checkbox',
+      id: 'italic',
+      checked: this.state.isItalic,
+      onChange: this.handleItalic
+    })), span({}, label({
+      htmlFor: 'bold'
+    }, _("bold")), input({
+      type: 'checkbox',
+      id: 'bold',
+      checked: this.state.isBold,
+      onChange: this.handleBold
+    })));
+  }
+}));
+
+module.exports = {};
+
+
+},{"../core/localization":13,"../reactGUI/React-shim":35,"./optionsStyles":26}],24:[function(require,module,exports){
+var React, StrokeWidthPicker, classSet, createSetStateOnEventMixin, defineOptionsStyle;
+
+React = require('../reactGUI/React-shim');
+
+defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
+
+StrokeWidthPicker = React.createFactory(require('../reactGUI/StrokeWidthPicker'));
+
+createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
+
+classSet = require('../core/util').classSet;
+
+defineOptionsStyle('line-options-and-stroke-width', React.createClass({
+  displayName: 'LineOptionsAndStrokeWidth',
+  getState: function() {
+    return {
+      strokeWidth: this.props.tool.strokeWidth,
+      isDashed: this.props.tool.isDashed,
+      hasEndArrow: this.props.tool.hasEndArrow
+    };
+  },
+  getInitialState: function() {
+    return this.getState();
+  },
+  mixins: [createSetStateOnEventMixin('toolChange')],
+  render: function() {
+    var arrowButtonClass, dashButtonClass, div, img, li, ref, style, toggleIsDashed, togglehasEndArrow, ul;
+    ref = React.DOM, div = ref.div, ul = ref.ul, li = ref.li, img = ref.img;
+    toggleIsDashed = (function(_this) {
+      return function() {
+        _this.props.tool.isDashed = !_this.props.tool.isDashed;
+        return _this.setState(_this.getState());
+      };
+    })(this);
+    togglehasEndArrow = (function(_this) {
+      return function() {
+        _this.props.tool.hasEndArrow = !_this.props.tool.hasEndArrow;
+        return _this.setState(_this.getState());
+      };
+    })(this);
+    dashButtonClass = classSet({
+      'square-toolbar-button': true,
+      'selected': this.state.isDashed
+    });
+    arrowButtonClass = classSet({
+      'square-toolbar-button': true,
+      'selected': this.state.hasEndArrow
+    });
+    style = {
+      float: 'left',
+      margin: 1
+    };
+    return div({}, div({
+      className: dashButtonClass,
+      onClick: toggleIsDashed,
+      style: style
+    }, img({
+      src: this.props.imageURLPrefix + "/dashed-line.png"
+    })), div({
+      className: arrowButtonClass,
+      onClick: togglehasEndArrow,
+      style: style
+    }, img({
+      src: this.props.imageURLPrefix + "/line-with-arrow.png"
+    })), StrokeWidthPicker({
+      tool: this.props.tool,
+      lc: this.props.lc
+    }));
+  }
+}));
+
+module.exports = {};
+
+
+},{"../core/util":19,"../reactGUI/React-shim":35,"../reactGUI/StrokeWidthPicker":37,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":26}],25:[function(require,module,exports){
+var React, defineOptionsStyle;
+
+React = require('../reactGUI/React-shim');
+
+defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
+
+defineOptionsStyle('null', React.createClass({
+  displayName: 'NoOptions',
+  render: function() {
+    return React.DOM.div();
+  }
+}));
+
+module.exports = {};
+
+
+},{"../reactGUI/React-shim":35,"./optionsStyles":26}],26:[function(require,module,exports){
+var React, defineOptionsStyle, optionsStyles;
+
+React = require('../reactGUI/React-shim');
+
+optionsStyles = {};
+
+defineOptionsStyle = function(name, style) {
+  return optionsStyles[name] = React.createFactory(style);
+};
+
+module.exports = {
+  optionsStyles: optionsStyles,
+  defineOptionsStyle: defineOptionsStyle
+};
+
+
+},{"../reactGUI/React-shim":35}],27:[function(require,module,exports){
+var React, StrokeWidthPicker, createSetStateOnEventMixin, defineOptionsStyle;
+
+React = require('../reactGUI/React-shim');
+
+defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
+
+StrokeWidthPicker = React.createFactory(require('../reactGUI/StrokeWidthPicker'));
+
+createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
+
+defineOptionsStyle('polygon-and-stroke-width', React.createClass({
+  displayName: 'PolygonAndStrokeWidth',
+  getState: function() {
+    return {
+      strokeWidth: this.props.tool.strokeWidth,
+      inProgress: false
+    };
+  },
+  getInitialState: function() {
+    return this.getState();
+  },
+  mixins: [createSetStateOnEventMixin('toolChange')],
+  componentDidMount: function() {
+    var hidePolygonTools, showPolygonTools, unsubscribeFuncs;
+    unsubscribeFuncs = [];
+    this.unsubscribe = (function(_this) {
+      return function() {
+        var func, i, len, results;
+        results = [];
+        for (i = 0, len = unsubscribeFuncs.length; i < len; i++) {
+          func = unsubscribeFuncs[i];
+          results.push(func());
+        }
+        return results;
+      };
+    })(this);
+    showPolygonTools = (function(_this) {
+      return function() {
+        if (!_this.state.inProgress) {
+          return _this.setState({
+            inProgress: true
+          });
+        }
+      };
+    })(this);
+    hidePolygonTools = (function(_this) {
+      return function() {
+        return _this.setState({
+          inProgress: false
+        });
+      };
+    })(this);
+    unsubscribeFuncs.push(this.props.lc.on('lc-polygon-started', showPolygonTools));
+    return unsubscribeFuncs.push(this.props.lc.on('lc-polygon-stopped', hidePolygonTools));
+  },
+  componentWillUnmount: function() {
+    return this.unsubscribe();
+  },
+  render: function() {
+    var div, img, lc, polygonCancel, polygonFinishClosed, polygonFinishOpen, polygonToolStyle, ref;
+    lc = this.props.lc;
+    ref = React.DOM, div = ref.div, img = ref.img;
+    polygonFinishOpen = (function(_this) {
+      return function() {
+        return lc.trigger('lc-polygon-finishopen');
+      };
+    })(this);
+    polygonFinishClosed = (function(_this) {
+      return function() {
+        return lc.trigger('lc-polygon-finishclosed');
+      };
+    })(this);
+    polygonCancel = (function(_this) {
+      return function() {
+        return lc.trigger('lc-polygon-cancel');
+      };
+    })(this);
+    polygonToolStyle = {};
+    if (!this.state.inProgress) {
+      polygonToolStyle = {
+        display: 'none'
+      };
+    }
+    return div({}, div({
+      className: 'polygon-toolbar horz-toolbar',
+      style: polygonToolStyle
+    }, div({
+      className: 'square-toolbar-button',
+      onClick: polygonFinishOpen
+    }, img({
+      src: this.props.imageURLPrefix + "/polygon-open.png"
+    })), div({
+      className: 'square-toolbar-button',
+      onClick: polygonFinishClosed
+    }, img({
+      src: this.props.imageURLPrefix + "/polygon-closed.png"
+    })), div({
+      className: 'square-toolbar-button',
+      onClick: polygonCancel
+    }, img({
+      src: this.props.imageURLPrefix + "/polygon-cancel.png"
+    }))), div({}, StrokeWidthPicker({
+      tool: this.props.tool,
+      lc: this.props.lc
+    })));
+  }
+}));
+
+module.exports = {};
+
+
+},{"../reactGUI/React-shim":35,"../reactGUI/StrokeWidthPicker":37,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":26}],28:[function(require,module,exports){
+'use strict';
+
+var React = require('../reactGUI/React-shim');
+
+var _require = require('./optionsStyles');
+
+var defineOptionsStyle = _require.defineOptionsStyle;
+
+var createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
+
+defineOptionsStyle('stroke-or-fill', React.createClass({
+  displayName: 'StrokeOrFillPicker',
+  getState: function getState() {
+    return { strokeOrFill: 'stroke' };
+  },
+  getInitialState: function getInitialState() {
+    return this.getState();
+  },
+  mixins: [createSetStateOnEventMixin('toolChange')],
+
+  onChange: function onChange(e) {
+    if (e.target.id == 'stroke-or-fill-stroke') {
+      this.props.lc.tool.strokeOrFill = 'stroke';
+    } else {
+      this.props.lc.tool.strokeOrFill = 'fill';
+    }
+    this.setState(this.getState());
+  },
+
+  render: function render() {
+    var lc = this.props.lc;
+
+    return React.createElement(
+      'form',
+      null,
+      React.createElement(
+        'span',
+        null,
+        'Color to change: '
+      ),
+      React.createElement(
+        'span',
+        null,
+        React.createElement('input', { type: 'radio', name: 'stroke-or-fill', value: 'stroke',
+          id: 'stroke-or-fill-stroke', onChange: this.onChange,
+          checked: lc.tool.strokeOrFill == 'stroke' }),
+        React.createElement(
+          'label',
+          { htmlFor: 'stroke-or-fill-stroke', className: 'label' },
+          ' stroke'
+        )
+      ),
+      React.createElement(
+        'span',
+        null,
+        React.createElement('input', { type: 'radio', name: 'stroke-or-fill', value: 'fill',
+          id: 'stroke-or-fill-fill', onChange: this.onChange,
+          checked: lc.tool.strokeOrFill == 'fill' }),
+        React.createElement(
+          'label',
+          { htmlFor: 'stroke-or-fill-fill', className: 'label' },
+          ' fill'
+        )
+      )
+    );
+  }
+}));
+
+module.exports = {};
+
+},{"../reactGUI/React-shim":35,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":26}],29:[function(require,module,exports){
+var StrokeWidthPicker, defineOptionsStyle;
+
+defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
+
+StrokeWidthPicker = require('../reactGUI/StrokeWidthPicker');
+
+defineOptionsStyle('stroke-width', StrokeWidthPicker);
+
+module.exports = {};
+
+
+},{"../reactGUI/StrokeWidthPicker":37,"./optionsStyles":26}],30:[function(require,module,exports){
+var ClearButton, React, _, classSet, createSetStateOnEventMixin;
+
+React = require('./React-shim');
+
+createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
+
+_ = require('../core/localization')._;
+
+classSet = require('../core/util').classSet;
+
+ClearButton = React.createClass({
+  displayName: 'ClearButton',
+  getState: function() {
+    return {
+      isEnabled: this.props.lc.canUndo()
+    };
+  },
+  getInitialState: function() {
+    return this.getState();
+  },
+  mixins: [createSetStateOnEventMixin('drawingChange')],
+  render: function() {
+    var className, div, lc, onClick;
+    div = React.DOM.div;
+    lc = this.props.lc;
+    className = classSet({
+      'lc-clear': true,
+      'toolbar-button': true,
+      'fat-button': true,
+      'disabled': !this.state.isEnabled
+    });
+    onClick = lc.canUndo() ? ((function(_this) {
+      return function() {
+        return lc.clear();
+      };
+    })(this)) : function() {};
+    return div({
+      className: className,
+      onClick: onClick
+    }, _('Clear'));
+  }
+});
+
+module.exports = ClearButton;
+
+
+},{"../core/localization":13,"../core/util":19,"./React-shim":35,"./createSetStateOnEventMixin":40}],31:[function(require,module,exports){
+var ColorGrid, ColorWell, PureRenderMixin, React, cancelAnimationFrame, classSet, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
+
+React = require('./React-shim');
+
+PureRenderMixin = require('react-addons-pure-render-mixin');
+
+ref = require('../core/util'), classSet = ref.classSet, requestAnimationFrame = ref.requestAnimationFrame, cancelAnimationFrame = ref.cancelAnimationFrame;
+
+parseHSLAString = function(s) {
+  var components, firstParen, insideParens, lastParen;
+  if (s === 'transparent') {
+    return {
+      hue: 0,
+      sat: 0,
+      light: 0,
+      alpha: 0
+    };
+  }
+  if (s.substring(0, 4) !== 'hsla') {
+    return null;
+  }
+  firstParen = s.indexOf('(');
+  lastParen = s.indexOf(')');
+  insideParens = s.substring(firstParen + 1, lastParen - firstParen + 4);
+  components = (function() {
+    var j, len, ref1, results;
+    ref1 = insideParens.split(',');
+    results = [];
+    for (j = 0, len = ref1.length; j < len; j++) {
+      s = ref1[j];
+      results.push(s.trim());
+    }
+    return results;
+  })();
+  return {
+    hue: parseInt(components[0], 10),
+    sat: parseInt(components[1].substring(0, components[1].length - 1), 10),
+    light: parseInt(components[2].substring(0, components[2].length - 1), 10),
+    alpha: parseFloat(components[3])
+  };
+};
+
+getHSLAString = function(arg) {
+  var alpha, hue, light, sat;
+  hue = arg.hue, sat = arg.sat, light = arg.light, alpha = arg.alpha;
+  return "hsla(" + hue + ", " + sat + "%, " + light + "%, " + alpha + ")";
+};
+
+getHSLString = function(arg) {
+  var hue, light, sat;
+  hue = arg.hue, sat = arg.sat, light = arg.light;
+  return "hsl(" + hue + ", " + sat + "%, " + light + "%)";
+};
+
+ColorGrid = React.createFactory(React.createClass({
+  displayName: 'ColorGrid',
+  mixins: [PureRenderMixin],
+  render: function() {
+    var div;
+    div = React.DOM.div;
+    return div({}, this.props.rows.map((function(_this) {
+      return function(row, ix) {
+        return div({
+          className: 'color-row',
+          key: ix,
+          style: {
+            width: 20 * row.length
+          }
+        }, row.map(function(cellColor, ix2) {
+          var alpha, className, colorString, colorStringNoAlpha, hue, light, sat, update;
+          hue = cellColor.hue, sat = cellColor.sat, light = cellColor.light, alpha = cellColor.alpha;
+          colorString = getHSLAString(cellColor);
+          colorStringNoAlpha = "hsl(" + hue + ", " + sat + "%, " + light + "%)";
+          className = classSet({
+            'color-cell': true,
+            'selected': _this.props.selectedColor === colorString
+          });
+          update = function(e) {
+            _this.props.onChange(cellColor, colorString);
+            e.stopPropagation();
+            return e.preventDefault();
+          };
+          return div({
+            className: className,
+            onTouchStart: update,
+            onTouchMove: update,
+            onClick: update,
+            style: {
+              backgroundColor: colorStringNoAlpha
+            },
+            key: ix2
+          });
+        }));
+      };
+    })(this)));
+  }
+}));
+
+ColorWell = React.createClass({
+  displayName: 'ColorWell',
+  mixins: [PureRenderMixin],
+  getInitialState: function() {
+    var colorString, hsla;
+    colorString = this.props.lc.colors[this.props.colorName];
+    hsla = parseHSLAString(colorString);
+    if (hsla == null) {
+      hsla = {};
+    }
+    if (hsla.alpha == null) {
+      hsla.alpha = 1;
+    }
+    if (hsla.sat == null) {
+      hsla.sat = 100;
+    }
+    if (hsla.hue == null) {
+      hsla.hue = 0;
+    }
+    if (hsla.light == null) {
+      hsla.light = 50;
+    }
+    return {
+      colorString: colorString,
+      alpha: hsla.alpha,
+      sat: hsla.sat === 0 ? 100 : hsla.sat,
+      isPickerVisible: false,
+      hsla: hsla
+    };
+  },
+  componentDidMount: function() {
+    return this.unsubscribe = this.props.lc.on(this.props.colorName + "ColorChange", (function(_this) {
+      return function() {
+        var colorString;
+        colorString = _this.props.lc.colors[_this.props.colorName];
+        _this.setState({
+          colorString: colorString
+        });
+        return _this.setHSLAFromColorString(colorString);
+      };
+    })(this));
+  },
+  componentWillUnmount: function() {
+    return this.unsubscribe();
+  },
+  setHSLAFromColorString: function(c) {
+    var hsla;
+    hsla = parseHSLAString(c);
+    if (hsla) {
+      return this.setState({
+        hsla: hsla,
+        alpha: hsla.alpha,
+        sat: hsla.sat
+      });
+    } else {
+      return this.setState({
+        hsla: null,
+        alpha: 1,
+        sat: 100
+      });
+    }
+  },
+  closePicker: function() {
+    return this.setState({
+      isPickerVisible: false
+    });
+  },
+  togglePicker: function() {
+    var isPickerVisible, shouldResetSat;
+    isPickerVisible = !this.state.isPickerVisible;
+    shouldResetSat = isPickerVisible && this.state.sat === 0;
+    this.setHSLAFromColorString(this.state.colorString);
+    return this.setState({
+      isPickerVisible: isPickerVisible,
+      sat: shouldResetSat ? 100 : this.state.sat
+    });
+  },
+  setColor: function(c) {
+    this.setState({
+      colorString: c
+    });
+    this.setHSLAFromColorString(c);
+    return this.props.lc.setColor(this.props.colorName, c);
+  },
+  setAlpha: function(alpha) {
+    var hsla;
+    this.setState({
+      alpha: alpha
+    });
+    if (this.state.hsla) {
+      hsla = this.state.hsla;
+      hsla.alpha = alpha;
+      this.setState({
+        hsla: hsla
+      });
+      return this.setColor(getHSLAString(hsla));
+    }
+  },
+  setSat: function(sat) {
+    var hsla;
+    this.setState({
+      sat: sat
+    });
+    if (isNaN(sat)) {
+      throw "SAT";
+    }
+    if (this.state.hsla) {
+      hsla = this.state.hsla;
+      hsla.sat = sat;
+      this.setState({
+        hsla: hsla
+      });
+      return this.setColor(getHSLAString(hsla));
+    }
+  },
+  render: function() {
+    var br, div, label, ref1;
+    ref1 = React.DOM, div = ref1.div, label = ref1.label, br = ref1.br;
+    return div({
+      className: classSet({
+        'color-well': true,
+        'open': this.state.isPickerVisible
+      }),
+      onMouseLeave: this.closePicker,
+      style: {
+        float: 'left',
+        textAlign: 'center'
+      }
+    }, label({
+      float: 'left'
+    }, this.props.label), br({}), div({
+      className: classSet({
+        'color-well-color-container': true,
+        'selected': this.state.isPickerVisible
+      }),
+      style: {
+        backgroundColor: 'white'
+      },
+      onClick: this.togglePicker
+    }, div({
+      className: 'color-well-checker color-well-checker-top-left'
+    }), div({
+      className: 'color-well-checker color-well-checker-bottom-right',
+      style: {
+        left: '50%',
+        top: '50%'
+      }
+    }), div({
+      className: 'color-well-color',
+      style: {
+        backgroundColor: this.state.colorString
+      }
+    }, " ")), this.renderPicker());
+  },
+  renderPicker: function() {
+    var div, hue, i, input, j, label, len, onSelectColor, ref1, ref2, renderColor, renderLabel, rows;
+    ref1 = React.DOM, div = ref1.div, label = ref1.label, input = ref1.input;
+    if (!this.state.isPickerVisible) {
+      return null;
+    }
+    renderLabel = (function(_this) {
+      return function(text) {
+        return div({
+          className: 'color-row label',
+          key: text,
+          style: {
+            lineHeight: '20px',
+            height: 16
+          }
+        }, text);
+      };
+    })(this);
+    renderColor = (function(_this) {
+      return function() {
+        var checkerboardURL;
+        checkerboardURL = _this.props.lc.opts.imageURLPrefix + "/checkerboard-8x8.png";
+        return div({
+          className: 'color-row',
+          key: "color",
+          style: {
+            position: 'relative',
+            backgroundImage: "url(" + checkerboardURL + ")",
+            backgroundRepeat: 'repeat',
+            height: 24
+          }
+        }, div({
+          style: {
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: _this.state.colorString
+          }
+        }));
+      };
+    })(this);
+    rows = [];
+    rows.push((function() {
+      var j, results;
+      results = [];
+      for (i = j = 0; j <= 100; i = j += 10) {
+        results.push({
+          hue: 0,
+          sat: 0,
+          light: i,
+          alpha: this.state.alpha
+        });
+      }
+      return results;
+    }).call(this));
+    ref2 = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+    for (j = 0, len = ref2.length; j < len; j++) {
+      hue = ref2[j];
+      rows.push((function() {
+        var k, results;
+        results = [];
+        for (i = k = 10; k <= 90; i = k += 8) {
+          results.push({
+            hue: hue,
+            sat: this.state.sat,
+            light: i,
+            alpha: this.state.alpha
+          });
+        }
+        return results;
+      }).call(this));
+    }
+    onSelectColor = (function(_this) {
+      return function(hsla, s) {
+        return _this.setColor(s);
+      };
+    })(this);
+    return div({
+      className: 'color-picker-popup'
+    }, renderColor(), renderLabel("alpha"), input({
+      type: 'range',
+      min: 0,
+      max: 1,
+      step: 0.01,
+      value: this.state.alpha,
+      onChange: (function(_this) {
+        return function(e) {
+          return _this.setAlpha(parseFloat(e.target.value));
+        };
+      })(this)
+    }), renderLabel("saturation"), input({
+      type: 'range',
+      min: 0,
+      max: 100,
+      value: this.state.sat,
+      max: 100,
+      onChange: (function(_this) {
+        return function(e) {
+          return _this.setSat(parseInt(e.target.value, 10));
+        };
+      })(this)
+    }), ColorGrid({
+      rows: rows,
+      selectedColor: this.state.colorString,
+      onChange: onSelectColor
+    }));
+  }
+});
+
+module.exports = ColorWell;
+
+
+},{"../core/util":19,"./React-shim":35,"react-addons-pure-render-mixin":1}],32:[function(require,module,exports){
+'use strict';
+
+var React = require('../reactGUI/React-shim');
+
+var _require = require('../reactGUI/ReactDOM-shim');
+
+var findDOMNode = _require.findDOMNode;
+
+var _require2 = require('../core/util');
+
+var classSet = _require2.classSet;
+
+var Picker = require('./Picker');
+var Options = require('./Options');
+var createToolButton = require('./createToolButton');
+var LiterallyCanvasModel = require('../core/LiterallyCanvas');
+var defaultOptions = require('../core/defaultOptions');
+
+require('../optionsStyles/font');
+require('../optionsStyles/stroke-width');
+require('../optionsStyles/line-options-and-stroke-width');
+require('../optionsStyles/polygon-and-stroke-width');
+require('../optionsStyles/null');
+
+var CanvasContainer = React.createClass({
+  displayName: 'CanvasContainer',
+  shouldComponentUpdate: function shouldComponentUpdate() {
+    // Avoid React trying to control this DOM
+    return false;
+  },
+  render: function render() {
+    return React.createElement('div', { key: 'literallycanvas', className: 'lc-drawing with-gui' });
+  }
+});
+
+var LiterallyCanvas = React.createClass({
+  displayName: 'LiterallyCanvas',
+
+  getDefaultProps: function getDefaultProps() {
+    return defaultOptions;
+  },
+  bindToModel: function bindToModel() {
+    var canvasContainerEl = findDOMNode(this.canvas);
+    var opts = this.props;
+    this.lc.bindToElement(canvasContainerEl);
+
+    if (typeof opts.onInit === 'function') {
+      opts.onInit(this.lc);
+    }
+  },
+  componentWillMount: function componentWillMount() {
+    var _this = this;
+
+    if (this.lc) return;
+
+    if (this.props.lc) {
+      this.lc = this.props.lc;
+    } else {
+      this.lc = new LiterallyCanvasModel(this.props);
+    }
+
+    this.toolButtonComponents = this.lc.opts.tools.map(function (ToolClass) {
+      return createToolButton(new ToolClass(_this.lc));
+    });
+  },
+  componentDidMount: function componentDidMount() {
+    if (!this.lc.isBound) {
+      this.bindToModel();
+    }
+  },
+  componentWillUnmount: function componentWillUnmount() {
+    if (this.lc) {
+      this.lc._teardown();
+    }
+  },
+  render: function render() {
+    var _this2 = this;
+
+    var lc = this.lc;
+    var toolButtonComponents = this.toolButtonComponents;
+    var props = this.props;
+    var _lc$opts = this.lc.opts;
+    var imageURLPrefix = _lc$opts.imageURLPrefix;
+    var toolbarPosition = _lc$opts.toolbarPosition;
+
+    var pickerProps = { lc: lc, toolButtonComponents: toolButtonComponents, imageURLPrefix: imageURLPrefix };
+    var topOrBottomClassName = classSet({
+      'toolbar-at-top': toolbarPosition === 'top',
+      'toolbar-at-bottom': toolbarPosition === 'bottom',
+      'toolbar-hidden': toolbarPosition === 'hidden'
+    });
+    return React.createElement(
+      'div',
+      { className: 'literally ' + topOrBottomClassName },
+      React.createElement(CanvasContainer, { ref: function ref(item) {
+          return _this2.canvas = item;
+        } }),
+      React.createElement(Picker, pickerProps),
+      React.createElement(Options, { lc: lc, imageURLPrefix: imageURLPrefix })
+    );
+  }
+});
+
+module.exports = LiterallyCanvas;
+
+},{"../core/LiterallyCanvas":5,"../core/defaultOptions":10,"../core/util":19,"../optionsStyles/font":23,"../optionsStyles/line-options-and-stroke-width":24,"../optionsStyles/null":25,"../optionsStyles/polygon-and-stroke-width":27,"../optionsStyles/stroke-width":29,"../reactGUI/React-shim":35,"../reactGUI/ReactDOM-shim":36,"./Options":33,"./Picker":34,"./createToolButton":41}],33:[function(require,module,exports){
+var Options, React, createSetStateOnEventMixin, optionsStyles;
+
+React = require('./React-shim');
+
+createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
+
+optionsStyles = require('../optionsStyles/optionsStyles').optionsStyles;
+
+Options = React.createClass({
+  displayName: 'Options',
+  getState: function() {
+    var ref;
+    return {
+      style: (ref = this.props.lc.tool) != null ? ref.optionsStyle : void 0,
+      tool: this.props.lc.tool
+    };
+  },
+  getInitialState: function() {
+    return this.getState();
+  },
+  mixins: [createSetStateOnEventMixin('toolChange')],
+  renderBody: function() {
+    var style;
+    style = "" + this.state.style;
+    return optionsStyles[style] && optionsStyles[style]({
+      lc: this.props.lc,
+      tool: this.state.tool,
+      imageURLPrefix: this.props.imageURLPrefix
+    });
+  },
+  render: function() {
+    var div;
+    div = React.DOM.div;
+    return div({
+      className: 'lc-options horz-toolbar'
+    }, this.renderBody());
+  }
+});
+
+module.exports = Options;
+
+
+},{"../optionsStyles/optionsStyles":26,"./React-shim":35,"./createSetStateOnEventMixin":40}],34:[function(require,module,exports){
+var ClearButton, ColorPickers, ColorWell, Picker, React, UndoRedoButtons, ZoomButtons, _;
+
+React = require('./React-shim');
+
+ClearButton = React.createFactory(require('./ClearButton'));
+
+UndoRedoButtons = React.createFactory(require('./UndoRedoButtons'));
+
+ZoomButtons = React.createFactory(require('./ZoomButtons'));
+
+_ = require('../core/localization')._;
+
+ColorWell = React.createFactory(require('./ColorWell'));
+
+ColorPickers = React.createFactory(React.createClass({
+  displayName: 'ColorPickers',
+  render: function() {
+    var div, lc;
+    lc = this.props.lc;
+    div = React.DOM.div;
+    return div({
+      className: 'lc-color-pickers'
+    }, ColorWell({
+      lc: lc,
+      colorName: 'primary',
+      label: _('stroke')
+    }), ColorWell({
+      lc: lc,
+      colorName: 'secondary',
+      label: _('fill')
+    }), ColorWell({
+      lc: lc,
+      colorName: 'background',
+      label: _('bg')
+    }));
+  }
+}));
+
+Picker = React.createClass({
+  displayName: 'Picker',
+  getInitialState: function() {
+    return {
+      selectedToolIndex: 0
+    };
+  },
+  renderBody: function() {
+    var div, imageURLPrefix, lc, ref, toolButtonComponents;
+    div = React.DOM.div;
+    ref = this.props, toolButtonComponents = ref.toolButtonComponents, lc = ref.lc, imageURLPrefix = ref.imageURLPrefix;
+    return div({
+      className: 'lc-picker-contents'
+    }, toolButtonComponents.map((function(_this) {
+      return function(component, ix) {
+        return component({
+          lc: lc,
+          imageURLPrefix: imageURLPrefix,
+          key: ix,
+          isSelected: ix === _this.state.selectedToolIndex,
+          onSelect: function(tool) {
+            lc.setTool(tool);
+            return _this.setState({
+              selectedToolIndex: ix
+            });
+          }
+        });
+      };
+    })(this)), toolButtonComponents.length % 2 !== 0 ? div({
+      className: 'toolbar-button thin-button disabled'
+    }) : void 0, div({
+      style: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0
+      }
+    }, ColorPickers({
+      lc: this.props.lc
+    }), UndoRedoButtons({
+      lc: lc,
+      imageURLPrefix: imageURLPrefix
+    }), ZoomButtons({
+      lc: lc,
+      imageURLPrefix: imageURLPrefix
+    }), ClearButton({
+      lc: lc
+    })));
+  },
+  render: function() {
+    var div;
+    div = React.DOM.div;
+    return div({
+      className: 'lc-picker'
+    }, this.renderBody());
+  }
+});
+
+module.exports = Picker;
+
+
+},{"../core/localization":13,"./ClearButton":30,"./ColorWell":31,"./React-shim":35,"./UndoRedoButtons":38,"./ZoomButtons":39}],35:[function(require,module,exports){
+var React, error;
+
+try {
+  React = require('react');
+} catch (error) {
+  React = window.React;
+}
+
+if (React == null) {
+  throw "Can't find React";
+}
+
+module.exports = React;
+
+
+},{"react":"react"}],36:[function(require,module,exports){
+var ReactDOM, error, error1;
+
+try {
+  ReactDOM = require('react-dom');
+} catch (error) {
+  ReactDOM = window.ReactDOM;
+}
+
+if (ReactDOM == null) {
+  try {
+    ReactDOM = require('react');
+  } catch (error1) {
+    ReactDOM = window.React;
+  }
+}
+
+if (ReactDOM == null) {
+  throw "Can't find ReactDOM";
+}
+
+module.exports = ReactDOM;
+
+
+},{"react":"react","react-dom":"react-dom"}],37:[function(require,module,exports){
+var React, classSet, createSetStateOnEventMixin;
+
+React = require('./React-shim');
+
+createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
+
+classSet = require('../core/util').classSet;
+
+module.exports = React.createClass({
+  displayName: 'StrokeWidthPicker',
+  getState: function(tool) {
+    if (tool == null) {
+      tool = this.props.tool;
+    }
+    return {
+      strokeWidth: tool.strokeWidth
+    };
+  },
+  getInitialState: function() {
+    return this.getState();
+  },
+  mixins: [createSetStateOnEventMixin('toolDidUpdateOptions')],
+  componentWillReceiveProps: function(props) {
+    return this.setState(this.getState(props.tool));
+  },
+  render: function() {
+    var circle, div, li, ref, strokeWidths, svg, ul;
+    ref = React.DOM, ul = ref.ul, li = ref.li, svg = ref.svg, circle = ref.circle, div = ref.div;
+    strokeWidths = this.props.lc.opts.strokeWidths;
+    return div({}, strokeWidths.map((function(_this) {
+      return function(strokeWidth, ix) {
+        var buttonClassName, buttonSize;
+        buttonClassName = classSet({
+          'square-toolbar-button': true,
+          'selected': strokeWidth === _this.state.strokeWidth
+        });
+        buttonSize = 28;
+        return div({
+          key: strokeWidth
+        }, div({
+          className: buttonClassName,
+          onClick: function() {
+            return _this.props.lc.trigger('setStrokeWidth', strokeWidth);
+          }
+        }, svg({
+          width: buttonSize - 2,
+          height: buttonSize - 2,
+          viewPort: "0 0 " + strokeWidth + " " + strokeWidth,
+          version: "1.1",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, circle({
+          cx: Math.ceil(buttonSize / 2 - 1),
+          cy: Math.ceil(buttonSize / 2 - 1),
+          r: strokeWidth / 2
+        }))));
+      };
+    })(this)));
+  }
+});
+
+
+},{"../core/util":19,"../reactGUI/createSetStateOnEventMixin":40,"./React-shim":35}],38:[function(require,module,exports){
+var React, RedoButton, UndoButton, UndoRedoButtons, classSet, createSetStateOnEventMixin, createUndoRedoButtonComponent;
+
+React = require('./React-shim');
+
+createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
+
+classSet = require('../core/util').classSet;
+
+createUndoRedoButtonComponent = function(undoOrRedo) {
+  return React.createClass({
+    displayName: undoOrRedo === 'undo' ? 'UndoButton' : 'RedoButton',
+    getState: function() {
+      return {
+        isEnabled: (function() {
+          switch (false) {
+            case undoOrRedo !== 'undo':
+              return this.props.lc.canUndo();
+            case undoOrRedo !== 'redo':
+              return this.props.lc.canRedo();
+          }
+        }).call(this)
+      };
+    },
+    getInitialState: function() {
+      return this.getState();
+    },
+    mixins: [createSetStateOnEventMixin('drawingChange')],
+    render: function() {
+      var className, div, imageURLPrefix, img, lc, onClick, ref, ref1, src, style, title;
+      ref = React.DOM, div = ref.div, img = ref.img;
+      ref1 = this.props, lc = ref1.lc, imageURLPrefix = ref1.imageURLPrefix;
+      title = undoOrRedo === 'undo' ? 'Undo' : 'Redo';
+      className = ("lc-" + undoOrRedo + " ") + classSet({
+        'toolbar-button': true,
+        'thin-button': true,
+        'disabled': !this.state.isEnabled
+      });
+      onClick = (function() {
+        switch (false) {
+          case !!this.state.isEnabled:
+            return function() {};
+          case undoOrRedo !== 'undo':
+            return function() {
+              return lc.undo();
+            };
+          case undoOrRedo !== 'redo':
+            return function() {
+              return lc.redo();
+            };
+        }
+      }).call(this);
+      src = imageURLPrefix + "/" + undoOrRedo + ".png";
+      style = {
+        backgroundImage: "url(" + src + ")"
+      };
+      return div({
+        className: className,
+        onClick: onClick,
+        title: title,
+        style: style
+      });
+    }
+  });
+};
+
+UndoButton = React.createFactory(createUndoRedoButtonComponent('undo'));
+
+RedoButton = React.createFactory(createUndoRedoButtonComponent('redo'));
+
+UndoRedoButtons = React.createClass({
+  displayName: 'UndoRedoButtons',
+  render: function() {
+    var div;
+    div = React.DOM.div;
+    return div({
+      className: 'lc-undo-redo'
+    }, UndoButton(this.props), RedoButton(this.props));
+  }
+});
+
+module.exports = UndoRedoButtons;
+
+
+},{"../core/util":19,"./React-shim":35,"./createSetStateOnEventMixin":40}],39:[function(require,module,exports){
+var React, ZoomButtons, ZoomInButton, ZoomOutButton, classSet, createSetStateOnEventMixin, createZoomButtonComponent;
+
+React = require('./React-shim');
+
+createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
+
+classSet = require('../core/util').classSet;
+
+createZoomButtonComponent = function(inOrOut) {
+  return React.createClass({
+    displayName: inOrOut === 'in' ? 'ZoomInButton' : 'ZoomOutButton',
+    getState: function() {
+      return {
+        isEnabled: (function() {
+          switch (false) {
+            case inOrOut !== 'in':
+              return this.props.lc.scale < this.props.lc.config.zoomMax;
+            case inOrOut !== 'out':
+              return this.props.lc.scale > this.props.lc.config.zoomMin;
+          }
+        }).call(this)
+      };
+    },
+    getInitialState: function() {
+      return this.getState();
+    },
+    mixins: [createSetStateOnEventMixin('zoom')],
+    render: function() {
+      var className, div, imageURLPrefix, img, lc, onClick, ref, ref1, src, style, title;
+      ref = React.DOM, div = ref.div, img = ref.img;
+      ref1 = this.props, lc = ref1.lc, imageURLPrefix = ref1.imageURLPrefix;
+      title = inOrOut === 'in' ? 'Zoom in' : 'Zoom out';
+      className = ("lc-zoom-" + inOrOut + " ") + classSet({
+        'toolbar-button': true,
+        'thin-button': true,
+        'disabled': !this.state.isEnabled
+      });
+      onClick = (function() {
+        switch (false) {
+          case !!this.state.isEnabled:
+            return function() {};
+          case inOrOut !== 'in':
+            return function() {
+              return lc.zoom(lc.config.zoomStep);
+            };
+          case inOrOut !== 'out':
+            return function() {
+              return lc.zoom(-lc.config.zoomStep);
+            };
+        }
+      }).call(this);
+      src = imageURLPrefix + "/zoom-" + inOrOut + ".png";
+      style = {
+        backgroundImage: "url(" + src + ")"
+      };
+      return div({
+        className: className,
+        onClick: onClick,
+        title: title,
+        style: style
+      });
+    }
+  });
+};
+
+ZoomOutButton = React.createFactory(createZoomButtonComponent('out'));
+
+ZoomInButton = React.createFactory(createZoomButtonComponent('in'));
+
+ZoomButtons = React.createClass({
+  displayName: 'ZoomButtons',
+  render: function() {
+    var div;
+    div = React.DOM.div;
+    return div({
+      className: 'lc-zoom'
+    }, ZoomOutButton(this.props), ZoomInButton(this.props));
+  }
+});
+
+module.exports = ZoomButtons;
+
+
+},{"../core/util":19,"./React-shim":35,"./createSetStateOnEventMixin":40}],40:[function(require,module,exports){
+var React, createSetStateOnEventMixin;
+
+React = require('./React-shim');
+
+module.exports = createSetStateOnEventMixin = function(eventName) {
+  return {
+    componentDidMount: function() {
+      return this.unsubscribe = this.props.lc.on(eventName, (function(_this) {
+        return function() {
+          return _this.setState(_this.getState());
+        };
+      })(this));
+    },
+    componentWillUnmount: function() {
+      return this.unsubscribe();
+    }
+  };
+};
+
+
+},{"./React-shim":35}],41:[function(require,module,exports){
+var React, classSet, createToolButton;
+
+React = require('./React-shim');
+
+classSet = require('../core/util').classSet;
+
+createToolButton = function(tool) {
+  var displayName, imageName;
+  displayName = tool.name;
+  imageName = tool.iconName;
+  return React.createFactory(React.createClass({
+    displayName: displayName,
+    getDefaultProps: function() {
+      return {
+        isSelected: false,
+        lc: null
+      };
+    },
+    componentWillMount: function() {
+      if (this.props.isSelected) {
+        return this.props.lc.setTool(tool);
+      }
+    },
+    render: function() {
+      var className, div, imageURLPrefix, img, isSelected, onSelect, ref, ref1, src;
+      ref = React.DOM, div = ref.div, img = ref.img;
+      ref1 = this.props, imageURLPrefix = ref1.imageURLPrefix, isSelected = ref1.isSelected, onSelect = ref1.onSelect;
+      className = classSet({
+        'lc-pick-tool': true,
+        'toolbar-button': true,
+        'thin-button': true,
+        'selected': isSelected
+      });
+      src = imageURLPrefix + "/" + imageName + ".png";
+      return div({
+        className: className,
+        style: {
+          'backgroundImage': "url(" + src + ")"
+        },
+        onClick: (function() {
+          return onSelect(tool);
+        }),
+        title: displayName
+      });
+    }
+  }));
+};
+
+module.exports = createToolButton;
+
+
+},{"../core/util":19,"./React-shim":35}],42:[function(require,module,exports){
+'use strict';
+
+var React = require('./React-shim');
+var ReactDOM = require('./ReactDOM-shim');
+var LiterallyCanvasModel = require('../core/LiterallyCanvas');
+var LiterallyCanvasReactComponent = require('./LiterallyCanvas');
+
+function init(el, opts) {
+  var originalClassName = el.className;
+  var lc = new LiterallyCanvasModel(opts);
+  ReactDOM.render(React.createElement(LiterallyCanvasReactComponent, { lc: lc }), el);
+  lc.teardown = function () {
+    lc._teardown();
+    for (var i = 0; i < el.children.length; i++) {
+      el.removeChild(el.children[i]);
+    }
+    el.className = originalClassName;
+  };
+  return lc;
+}
+
+module.exports = init;
+
+},{"../core/LiterallyCanvas":5,"./LiterallyCanvas":32,"./React-shim":35,"./ReactDOM-shim":36}],43:[function(require,module,exports){
 var Ellipse, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -3603,7 +5276,7 @@ module.exports = Ellipse = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":29}],20:[function(require,module,exports){
+},{"../core/shapes":17,"./base":53}],44:[function(require,module,exports){
 var Eraser, Pencil, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -3641,7 +5314,7 @@ module.exports = Eraser = (function(superClass) {
 })(Pencil);
 
 
-},{"../core/shapes":13,"./Pencil":24}],21:[function(require,module,exports){
+},{"../core/shapes":17,"./Pencil":48}],45:[function(require,module,exports){
 var Eyedropper, Tool, getPixel,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -3702,7 +5375,7 @@ module.exports = Eyedropper = (function(superClass) {
 })(Tool);
 
 
-},{"./base":29}],22:[function(require,module,exports){
+},{"./base":53}],46:[function(require,module,exports){
 var Line, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -3759,7 +5432,7 @@ module.exports = Line = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":29}],23:[function(require,module,exports){
+},{"../core/shapes":17,"./base":53}],47:[function(require,module,exports){
 var Pan, Tool, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -3828,7 +5501,7 @@ module.exports = Pan = (function(superClass) {
 })(Tool);
 
 
-},{"../core/shapes":13,"./base":29}],24:[function(require,module,exports){
+},{"../core/shapes":17,"./base":53}],48:[function(require,module,exports){
 var Pencil, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -3890,7 +5563,7 @@ module.exports = Pencil = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":29}],25:[function(require,module,exports){
+},{"../core/shapes":17,"./base":53}],49:[function(require,module,exports){
 var Polygon, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4106,7 +5779,7 @@ module.exports = Polygon = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":29}],26:[function(require,module,exports){
+},{"../core/shapes":17,"./base":53}],50:[function(require,module,exports){
 var Rectangle, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4151,7 +5824,7 @@ module.exports = Rectangle = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":29}],27:[function(require,module,exports){
+},{"../core/shapes":17,"./base":53}],51:[function(require,module,exports){
 var SelectShape, Tool, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4306,7 +5979,7 @@ module.exports = SelectShape = (function(superClass) {
 })(Tool);
 
 
-},{"../core/shapes":13,"./base":29}],28:[function(require,module,exports){
+},{"../core/shapes":17,"./base":53}],52:[function(require,module,exports){
 var Text, Tool, createShape, getIsPointInBox,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4667,7 +6340,7 @@ module.exports = Text = (function(superClass) {
 })(Tool);
 
 
-},{"../core/shapes":13,"./base":29}],29:[function(require,module,exports){
+},{"../core/shapes":17,"./base":53}],53:[function(require,module,exports){
 var Tool, ToolWithStroke, tools,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4724,7 +6397,8 @@ tools.ToolWithStroke = ToolWithStroke = (function(superClass) {
     })(this);
     return unsubscribeFuncs.push(lc.on('setStrokeWidth', (function(_this) {
       return function(strokeWidth) {
-        return _this.strokeWidth = strokeWidth;
+        _this.strokeWidth = strokeWidth;
+        return lc.trigger('toolDidUpdateOptions');
       };
     })(this)));
   };
@@ -4740,5 +6414,5 @@ tools.ToolWithStroke = ToolWithStroke = (function(superClass) {
 module.exports = tools;
 
 
-},{}]},{},[18])(18)
+},{}]},{},[22])(22)
 });

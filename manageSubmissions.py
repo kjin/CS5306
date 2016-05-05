@@ -52,7 +52,8 @@ class SubmissionImage:
         return self.locked
     
     '''
-    Marks an image with the given ID as complete (unavailable for drawing)
+    Marks an image with the given ID as complete (unavailable for drawing,
+    available for evaluations)
     '''
     def setFinished(self):
         self.locked = True
@@ -187,7 +188,8 @@ mySocket.bind(('127.0.0.1', 9876))
 mySocket.listen(5)
 while 1:
     connectedSocket, addr = mySocket.accept()
-    received = connectedSocket.recv(1024).split(',')
+    received = connectedSocket.recv(1024)
+    print received
     # TODO: use the contents of the string array "received"
     # to invoke the relevant functions in Submission Manager
     
