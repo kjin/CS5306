@@ -23,5 +23,6 @@
         }
       }
     }
+    return "Python server is not running.";
   }
 ?>

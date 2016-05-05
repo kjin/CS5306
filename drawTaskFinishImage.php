@@ -7,7 +7,8 @@
   if (isset($_GET["userID"]) and isset($_GET["imageID"]) and file_put_contents("files/" . $_GET["imageID"] . ".png", $fileData))
   {
     $userID = $_GET["userID"];
-    echo makePythonModuleCall('drawTaskFinishImage', [$userID]);
+    $imageID = $_GET["imageID"];
+    echo makePythonModuleCall('drawTaskFinishImage', [$userID, $imageID]);
   }
   else
   {
