@@ -29,13 +29,12 @@
       <?php
         if (isset($_GET["id"])) {
           $id = $_GET["id"];
-          load($id)
         }
         else {
           $id = 0;
         }
         echo "<button onclick=\"save($id)\">Save Me</button>";
-        
+        echo "<button onclick=\"load($id)\">Load Me</button>";
         echo "\n<br />\n<br />";
         if($id[0]=='1'){
           
@@ -87,6 +86,7 @@
       }
 
       function onLoadSuccess(result) {
+        
         document.getElementById("messageBox").innerHTML += "Load success.<br>";
         lc.loadSnapshot(JSON.parse(result));
       }

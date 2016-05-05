@@ -78,6 +78,7 @@
       }
 
       function onLoadSuccess(result) {
+        
         document.getElementById("messageBox").innerHTML += "Load success.<br>";
         lc.loadSnapshot(JSON.parse(result));
       }

@@ -1,0 +1,26 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <form>
+            URL: https://cs-5306-kelvinjin.c9users.io/<input type="text" id="URL"></input><br />
+            Body: <input type="text" id="body"></input>
+        </form>
+        <button onclick="post()">Save Me</button>
+        <div id="output"></div>
+        <script src="static/jquery-1.8.2.js"></script>
+        <script>
+            function post()
+            {
+                var postURL = "https://cs-5306-kelvinjin.c9users.io/" + document.getElementById("URL").value;
+                var postBody = document.getElementById("body").value;
+                jQuery.post(postURL, postBody, onSuccess);
+            }
+            
+            function onSuccess(result)
+            {
+                document.getElementById("output").innerHTML = result;
+            }
+        </script>
+    </body>
+</html>
