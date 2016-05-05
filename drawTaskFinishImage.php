@@ -1,10 +1,13 @@
 <?php
   include 'pythonServerInterface.php';
-  $inputImage = file_get_contents("php://input");
-  if (isset($_GET["userID"]) and imagepng($inputImage, "files/" . $_GET["id"] . ".png"))
+  $img = file_get_contents("php://input");
+  $img = str_replace('data:image/png;base64,', '', $img);
+  $img = str_replace(' ', '+', $img);
+  $fileData = base64_decode($img);
+  if (isset($_GET["userID"]) and file_put_contents("files/" . $_GET["userID"] . ".png", $fileData))
   {
-    $userID = $_GET["userID"]);
-    echo makePythonModuleCall('drawTaskFinishImage', $userID);
+    $userID = $_GET["userID"];
+    echo makePythonModuleCall('drawTaskFinishImage', [$userID]);
   }
   else
   {

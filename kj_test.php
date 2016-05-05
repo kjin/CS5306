@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Literally Canvas</title>
-    <link href="/static/css/literallycanvas.css" rel="stylesheet">
+    <link href="/literallycanvas/css/literallycanvas.css" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no" />
 
@@ -40,9 +40,9 @@
     <div id="messageBox"></div>
 
     <!-- you really ought to include react-dom, but for react 0.14 you don't strictly have to. -->
-    <script src="static/js/react-0.14.3.js"></script>
-    <script src="static/js/literallycanvas.js"></script>
-    <script src="static/js/jquery-1.8.2.js"></script>
+    <script src="static/react-0.14.3.js"></script>
+    <script src="static/jquery-1.8.2.js"></script>
+    <script src="literallycanvas/js/literallycanvas.js"></script>
 
     <script type="text/javascript">
       var imageSize = {width: 800, height: 600};
@@ -54,7 +54,7 @@
       // var serverAddress = "http://52.24.144.42";
 
       var lc = LC.init(document.getElementById("lc"), {
-        imageURLPrefix: 'static/img',
+        imageURLPrefix: 'literallycanvas/img',
         toolbarPosition: 'bottom',
         defaultStrokeWidth: 2,
         imageSize: imageSize,
@@ -64,8 +64,9 @@
       var blank = lc.getSnapshot();
 
       function save(id) {
-        var snapshot = lc.getSnapshot();
-        jQuery.post(serverAddress + "/drawTaskFinishImage.php?userID=" + id, lc.renderSnapshotToImage(snapshot, { rect: imageBounds }), onSaveSuccess);
+        var image = lc.getImage({ rect: imageBounds }).toDataURL();
+        window.open(image);
+        jQuery.post(serverAddress + "/drawTaskFinishImage.php?userID=" + id, image, onSaveSuccess);
       }
 
       function onSaveSuccess() {
