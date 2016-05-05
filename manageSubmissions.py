@@ -17,9 +17,10 @@ class SubmissionImage:
         pass
     
     '''
-    Marks an image with the given ID as complete (unavailable for drawing)
+    Marks an image with the given ID as complete (unavailable for drawing,
+    available for evaluations)
     '''
-    def unlockImage(self):
+    def completeImage(self):
         pass
 
 '''
@@ -29,7 +30,8 @@ TODO: Maybe more functions are needed.
 class SubmissionManager:
     def __init__(self):
         # map from IDs to SubmissionImage objects
-        self.imageMap = map()
+        # self.imageMap = map()
+        pass
     
     '''
     Given a user ID and group size, return the ID of an image that is currently
@@ -42,7 +44,7 @@ class SubmissionManager:
     Given a user ID and group size, return the ID of two images that are
     currently available to be compared against each other.
     '''
-    def getAvailableImageToDrawOn(self):
+    def getAvailableImagesToEvaluate(self):
         return 1000, 1001
     
     '''
@@ -54,13 +56,13 @@ class SubmissionManager:
     '''
     Loads the contents of this object from disk.
     '''
-    def load(filePath):
+    def load(self, filePath):
         pass
     
     '''
     Saves the contents of this object to disk.
     '''
-    def save(filePath):
+    def save(self, filePath):
         pass
 
 myManager = SubmissionManager()
@@ -70,10 +72,11 @@ mySocket.bind(('127.0.0.1', 9876))
 mySocket.listen(5)
 while 1:
     connectedSocket, addr = mySocket.accept()
-    received = connectedSocket.recv(1024).split(',')
+    received = connectedSocket.recv(1024)
+    print received
     # TODO: use the contents of the string array "received"
     # to invoke the relevant functions in Submission MAnager
-    toSend = str(myManager.process(operationType, groupSize, userID))
+    toSend = "1001"
     connectedSocket.sendall(toSend)
     connectedSocket.close()
     myManager.save('output.txt')
