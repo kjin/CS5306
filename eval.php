@@ -26,9 +26,9 @@
       // string constants
       var strNoImages = "Sorry! Currently there are no images to compare. Please check back later. (Do NOT submit the HIT because it will be rejected.)";
       var strIncomplete = "Please choose an image.";
-      var strCode = "Thank you! Please copy the following ID into the token box in Mechanical Turk:";
+      var strCode = "Thank you! Please copy the following code into the token box in Mechanical Turk:";
     
-      var userID = <?php $result = $_GET["workerID"]; echo (isset($result) ? "\"$result\"" : "\"00000\""); ?>;
+      var userID = <?php echo "\"" . round(microtime(true) * 1000) . "\""; ?>;
       var maxNumComparisons = 10;
       
       var allComparisons = "";

@@ -9,19 +9,6 @@
       $numTimes = intval($_GET["numTimes"]);
     }
     $result = makePythonModuleCall('evalTaskGetImages', [$userID,$numTimes]);
-    // TODO: Delete this
-    if (!$result)
-    {
-      $result = "";
-      for ($i = 0; $i < $numTimes; $i++)
-      {
-        if ($i > 0)
-        {
-          $result .= ",";
-        }
-        $result .= "1001,1002";
-      }
-    }
     // replace every other comma with a semicolon
     $exploded = explode(',',$result);
     $result = "";

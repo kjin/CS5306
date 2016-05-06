@@ -22,11 +22,23 @@
 
   <body onload="load()">
     <div id="whole">
+      <div>
+        <h1></h1>
+      </div>
       <div id="instructions" align="center"></div>
+      <div id="skills" align="center">
+      <hr>
+        <b>How would you characterize your artistic ability?</b><br />
+        <input type="radio" name="skillLevel" value="1"> Beginner 
+        <input type="radio" name="skillLevel" value="2"> Intermediate 
+        <input type="radio" name="skillLevel" value="3"> Advanced<br />
+      <hr>
+      </div>
       <div class="fs-container">
         <div id="lc"></div>
       </div>
       <div align="center" id="complete">
+        <div align="center" id="messages"><br /></div>
         <button onclick="cancel()">Cancel</button>
       </div>
     </div>
@@ -37,9 +49,12 @@
     <script src="literallycanvas/js/literallycanvas.js"></script>
 
     <script type="text/javascript">
-      var strComplete = "A creature is partially finished in the canvas below. Complete the creature.";
-      var strDontComplete = "A creature is partially finished in the canvas below. Add to the creature, but do not complete it.";
-      var strCode = "Thank you! Please copy the following ID into the token box in Mechanical Turk:";
+      var strPreInstructions = "<b>Instructions:</b> A creature is partially finished in the canvas below. ";
+      var strComplete = "Please answer the question below and complete the creature.";
+      var strDontComplete = "Please answer the question below and add to the creature, but <b>do not complete it.</b>";
+      var strSufInstructions = "<br />Then click submit at the bottom of the page. <b>You should take at least two minutes but no more than one hour.</b>";
+      var strCode = "Thank you! Please copy the following code into the token box in Mechanical Turk:";
+      var strIncomplete = "Please select your skill level.";
       var strCancel = "The task has been canceled.";
     
       var imageSize = {width: 800, height: 600};
@@ -47,15 +62,30 @@
         x: 0, y: 0, width: imageSize.width, height: imageSize.height
       };
       
-      var userID = <?php $result = $_GET["workerID"]; echo (isset($result) ? "\"$result\"" : "\"00000\""); ?>;
+      var userID = <?php echo "\"" . round(microtime(true) * 1000) . "\""; ?>;
       var imageID;
       
       var lc;
       
 
       function save() {
+        var elements = document.getElementsByName("skillLevel");
+        var skillLevel = "";
+        for (var i = 0; i < elements.length; i++)
+        {
+          if (elements[i].checked)
+          {
+            skillLevel = elements[i].value;
+            break;
+          }
+        }
+        if (skillLevel.length == 0)
+        {
+          document.getElementById("messages").innerHTML = "<font color=\"red\">" + strIncomplete + "</font>";
+          return;
+        }
         var image = lc.getImage({ rect: imageBounds }).toDataURL();
-        jQuery.post("drawTaskFinishImage.php?userID=" + userID + "&imageID=" + imageID, image, displayUniqueToken);
+        jQuery.post("drawTaskFinishImage.php?userID=" + userID + "&imageID=" + imageID + "&skillLevel=" + skillLevel, image, displayUniqueToken);
       }
 
       function displayUniqueToken(result) {
@@ -70,10 +100,10 @@
         // This is the image we upload, NOT the image that is being drawn on
         imageID = parseInt(result);
         if(result[0]=='1'){
-          document.getElementById("instructions").innerHTML = "<b>Instructions: </b>" + strComplete;
+          document.getElementById("instructions").innerHTML = strPreInstructions + strComplete + strSufInstructions;
         }
         else{
-          document.getElementById("instructions").innerHTML = "<b>Instructions: </b>" + strDontComplete;
+          document.getElementById("instructions").innerHTML = strPreInstructions + strDontComplete + strSufInstructions;
         }
         var backgroundImage = new Image();
         // Subtract 100 from the image ID to get the image we should be drawing on.

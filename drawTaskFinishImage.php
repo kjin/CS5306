@@ -4,11 +4,12 @@
   $img = str_replace('data:image/png;base64,', '', $img);
   $img = str_replace(' ', '+', $img);
   $fileData = base64_decode($img);
-  if (isset($_GET["userID"]) and isset($_GET["imageID"]) and file_put_contents("files/" . $_GET["imageID"] . ".png", $fileData))
+  if (isset($_GET["userID"]) and isset($_GET["imageID"]) and isset($_GET["skillLevel"]) and file_put_contents("files/" . $_GET["imageID"] . ".png", $fileData))
   {
     $userID = $_GET["userID"];
     $imageID = $_GET["imageID"];
-    echo makePythonModuleCall('drawTaskFinishImage', [$userID, $imageID]);
+    $skillLevel = $_GET["skillLevel"];
+    echo makePythonModuleCall('drawTaskFinishImage', [$userID, $imageID, $skillLevel]);
   }
   else
   {

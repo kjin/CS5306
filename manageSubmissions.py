@@ -2,12 +2,13 @@ import socket
 import time
 import hashlib
 
-# number of seconds that image will be locked, 20 min
-MAX_DRAWING_TIME = 72000 
+# number of seconds that image will be locked, 60 min
+MAX_DRAWING_TIME = 3600 
 IMG_DATA_FILEPATH = 'imgdata.txt'
 EVAL_DATA_FILEPATH = 'evaldata.txt'
 NO_IMAGE = '-1'
 NO_USER = '-1'
+REWARD_CODE_STRING = 'fantasycreature'
 
 class SubmissionImage:
     '''
@@ -21,7 +22,7 @@ class SubmissionImage:
         userId - the id of the user that was most recently assigned this image
         dataString - string containing information needed for loading
     '''
-    def __init__(self, imgId=NO_IMAGE, locked=False, timeStamp=0, userId=NO_USER, finished=False, dataString=None):
+    def __init__(self, imgId=NO_IMAGE, locked=False, timeStamp=0, userId=NO_USER, finished=False, drawingSkill=0, dataString=None):
         if dataString is not None:
             self.loadData(dataString)
         else:
@@ -30,6 +31,7 @@ class SubmissionImage:
             self.timeStamp = timeStamp
             self.userId = userId
             self.finished = finished
+            self.drawingSkill = drawingSkill
             if imgId == NO_IMAGE:
                 self.totalGroupSize = 0
                 self.currentGroupSize = 0
@@ -63,7 +65,7 @@ class SubmissionImage:
     '''
     def unlockImage(self):
         self.locked = False
-        self.timeStamp = time.time()
+        self.timeStamp = 0.0
 
     '''
     Returns whether the image is currently being held by a user
@@ -84,7 +86,7 @@ class SubmissionImage:
     Returns state as a string
     '''                 
     def getData(self):
-        data = self.imgId + ' ' + str(self.isLocked()) + ' ' + str(self.timeStamp) + ' ' + self.userId + ' ' + str(self.finished)
+        data = self.imgId + ' ' + str(self.isLocked()) + ' ' + str(self.timeStamp) + ' ' + self.userId + ' ' + str(self.finished) + ' ' + str(self.drawingSkill)
         return data       
 
     '''
@@ -97,7 +99,7 @@ class SubmissionImage:
         self.timeStamp = float(data[2])
         self.userId = data[3]
         self.finished = data[4] == 'True'
-
+        self.drawingSkill = int(data[5])
         if self.imgId == NO_IMAGE:
             self.totalGroupSize = 0
             self.currentGroupSize = 0
@@ -177,7 +179,7 @@ class SubmissionManager:
                 minTimeStamp = img.timeStamp
                 availableImgId = imgId
         if availableImgId != NO_IMAGE:
-            self.imageDict[availableImgId].user = userId
+            self.imageDict[availableImgId].userId = userId
             self.imageDict[availableImgId].lockImage(MAX_DRAWING_TIME)
         return availableImgId
     
@@ -211,9 +213,10 @@ class SubmissionManager:
     '''
     Called when a drawing task is finished, creates a new image id if necessary and returns the mturk reward code
     '''
-    def drawTaskFinishImage(self, userId, imgId):
+    def drawTaskFinishImage(self, userId, imgId, drawingSkill):
         self.imageDict[imgId].finished = True
         self.imageDict[imgId].unlockImage()
+        self.imageDict[imgId].drawingSkill = drawingSkill
         totalGroupSize = int(imgId[0])
         currentGroupSize = int(imgId[1])
         baseImgId = imgId[2:4]
@@ -238,8 +241,9 @@ class SubmissionManager:
     '''
     def getRewardCode(self, userId):
         m = hashlib.md5()
-        m.update(userId)
-        return m.hexdigest()
+        m.update(userId + REWARD_CODE_STRING)
+        rewardCode = m.hexdigest()   
+        return userId + '_' + rewardCode
     
     '''
     Records the results of the pairwise evaluation
@@ -309,7 +313,7 @@ while 1:
     if received[0] == 'drawTaskGetImage':
         toSend = myManager.getAvailableImageToDrawOn(received[1])
     elif received[0] == 'drawTaskFinishImage':
-        toSend = myManager.drawTaskFinishImage(received[1], received[2])
+        toSend = myManager.drawTaskFinishImage(received[1], received[2], received[3])
     elif received[0] == 'evalTaskGetImages':
         toSend = myManager.getImagesToCompare(received[1], int(received[2]))
     elif received[0] == 'evalTaskCompare':
@@ -318,8 +322,11 @@ while 1:
         toSend = myManager.getRewardCode(received[1])
     elif received[0] == 'drawTaskCancelImage':
         toSend = myManager.cancelDrawingTask(received[1])
-
     print toSend
     connectedSocket.sendall(toSend)
     connectedSocket.close()
+
+    for imgId, img in myManager.imageDict.iteritems():
+        img.tryUnlockImage()
+
     myManager.save(IMG_DATA_FILEPATH, EVAL_DATA_FILEPATH)
