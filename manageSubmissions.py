@@ -1,82 +1,235 @@
 import socket
+import time
+import hashlib
 
-'''
-'''
+# number of seconds that image will be locked, 20 min
+MAX_DRAWING_TIME = 72000 
+IMG_DATA_FILEPATH = 'imgdata.txt'
+
 class SubmissionImage:
     '''
+    Creates a SubmissionImage which keeps track of the data related to an image
+    
+    Parameters
+        totalGroupSize - total number of people that need to work on the image to complete it
+        currentGroupSize - number of people that have worked on the image so far
+        locked - whether the image is available to be assigned
+        timeStamp - most recent time the image was locked until
+        userId - the id of the user that was most recently assigned this image
+    '''
+    def __init__(self, totalGroupSize, currentGroupSize, locked, timeStamp, userId):
+        self.totalGroupSize = totalGroupSize
+        self.currentGroupSize = currentGroupSize
+        self.locked = locked
+        self.timeStamp = timeStamp
+        self.userId = userId
+
+    '''
     Locks an image with the given ID (this image can't be given to another
-    turker) until the number of seconds provided elapses
+    turker) 
+
+    Parameters
+        numSeconds - number of seconds image will be locked
     '''
     def lockImage(self, numSeconds):
-        pass
+        currentTime = time.time()
+        self.timeStamp = currentTime + numSeconds
+        self.locked = True
     
     '''
-    Unlocks an image with the given ID
+    Checks the timeStamp of the image and tries to unlock it
     '''
-    def unlockImage(self):
-        pass
-    
-    '''
-    Marks an image with the given ID as complete (unavailable for drawing,
-    available for evaluations)
-    '''
-    def completeImage(self):
-        pass
+    def tryUnlockImage(self):
+        currentTime = time.time()
+        if self.timeStamp < currentTime:
+            self.locked = False
 
+    '''
+    Returns whether the image is available for assigning
+    '''
+    def isLocked(self):
+        if self.locked:
+            self.tryUnlockImage()
+        return self.locked
+    
+    '''
+    Marks an image with the given ID as complete (unavailable for drawing)
+    '''
+    def setFinished(self):
+        self.locked = True
+        self.timeStamp = float('inf')
+
+    '''
+    Keep track of the current user working on the image
+    '''
+    def setUser(self, userId):
+        self.userId = userId
+
+    '''
+    Returns pairwise comparisons as a string
+    '''                 
+    def getData(self):
+       pass
+   
+    '''
+    Loads the given string as pairwise comparisons
+    ''' 
+    def loadData(self, dataString):
+        pass 
+    
+class EvaluateTask:
+
+    '''
+    EvaluateTask keeps tracks of which pairwise comparisons have already been made 
+    between images that share the same base image
+
+    Parameters
+        imgIds - a list of image ids that share the same base image
+    '''
+    def __init__(self, imgIds):
+        self.imgIds = imgIds
+        self.pairwiseComparisons = dict()
+        for i in range(0, len(imgIds)):
+            for j in range(i+1, len(imgIds)):
+                id1 = imgIds[i]
+                id2 = imgIds[j]
+                self.pairwiseComparisons[(id1,id2)] = -1
+
+    '''
+    Returns the ids of two images that still need to be compared
+    Returns -1,-1 if all comparisons are finished already     
+    '''
+    def getAvailableComparison(self):
+        for comparison, result in self.pairwiseComparisons.iteritems():
+            if result == -1:
+                return comparison
+        return -1, -1
+       
+    '''
+    Returns pairwise comparisons as a string
+    '''                 
+    def getData(self):
+        dataString = ''
+        for comparison, result in self.pairwiseComparisons.iteritems():
+            id1, id2 = comparison
+            dataString += ' ' + id1 + ' ' + id2 + ' ' + result
+        return dataString 
+       
+    '''
+    Loads the given string as pairwise comparisons
+    ''' 
+    def loadData(self, dataString):
+        data = dataString.split()
+        for i in range(0, len(data)/3):
+            id1 = data[3*i]
+            id2 = data[3*i+1]
+            result = data[3*i+2]
+            self.pairwiseComparisons[(id1,id2)] = result
 '''
 A class that manages the state of submissions.
 TODO: Maybe more functions are needed.
 '''
 class SubmissionManager:
+
     def __init__(self):
-        # map from IDs to SubmissionImage objects
-        # self.imageMap = map()
+        # map from ids to SubmissionImage objects
+        self.imageDict = dict()
+
+
+    '''
+    Returns the ID of an image that is currently available to be drawn on
+    or -1 if there is no available image
+
+    Parameters
+        userId - id of the user
+    '''
+    def getAvailableImageToDrawOn(self, userId):
+        availableImgId = '-1'
+        minTimeStamp = float('inf')
+        for imgId, img in self.imageDict.iteritems():
+            if not img.isLocked() and img.timeStamp < minTimeStamp:
+                minTimeStamp = img.timeStamp
+                availableImgId = imgId
+        if availableImgId != '-1':
+            self.imageDict[availableImgId].setUser(userId)
+            self.imageDict[availableImgId].lockImage(MAX_DRAWING_TIME)
+        return availableImgId
+    
+    '''
+    Return the ID of two images that are currently available to be compared against each other
+
+    Parameters
+        userId - the id of the user
+    '''
+    def getImagesToCompare(self, userId):
         pass
-    
-    '''
-    Given a user ID and group size, return the ID of an image that is currently
-    available to be drawn on.
-    '''
-    def getAvailableImageToDrawOn(self, groupSize):
-        return 1000
-    
-    '''
-    Given a user ID and group size, return the ID of two images that are
-    currently available to be compared against each other.
-    '''
-    def getAvailableImagesToEvaluate(self):
-        return 1000, 1001
-    
+
     '''
     Returns a SubmissionImage object with the given image ID.
     '''
-    def getSubmissionImage(self, ID):
-        return self.imageMap[ID]
-    
+    def getSubmissionImage(self, imgId):
+        return self.imageDict[imgId]
+   
+    '''
+    Called when a drawing task is finished, creates a new image id if necessary and returns the mturk reward code
+    '''
+    def drawTaskFinishImage(self, userId, imgId):
+        self.imageDict[imgId].setFinished()
+        totalGroupSize = int(imgId[0])
+        currentGroupSize = int(imgId[1])
+        baseImgId = imgId[2:4]
+        # create a new image id if the image is not completed yet
+        if currentGroupSize < totalGroupSize:
+            nextImgId = str(totalGroupSize) + str(currentGroupSize+1) + baseImgId
+            self.imageDict[nextImgId] = SubmissionImage(totalGroupSize, currentGroupSize+1, False, 0.0, -1)
+        # create a new evaluation task if the all the group images for this base image are completed
+        
+        return 0 # how do i know what the mturk reward code is?
+
     '''
     Loads the contents of this object from disk.
     '''
     def load(self, filePath):
-        pass
+        with open(filePath) as infile:
+            for line in infile:
+                imgData = line.split()
+                imgId = imgData[0]
+                totalGroupSize = int(imgId[0])
+                currentGroupSize = int(imgId[1])
+                baseImgId = imgId[2:4]
+                locked = imgData[1] == 'True'
+                timeStamp = float(imgData[2])
+                userId = imgData[3]
+                img = SubmissionImage(totalGroupSize, currentGroupSize, locked, timeStamp, userId)
+                self.imageDict[imgId] = img
     
     '''
     Saves the contents of this object to disk.
     '''
     def save(self, filePath):
-        pass
+        with open(filePath, 'w') as outfile:
+            for imgId, img in self.imageDict.iteritems():
+                imgData = imgId + ' ' + str(img.isLocked()) + ' ' + str(img.timeStamp) + ' ' + img.userId + ' \n'
+                outfile.write(imgData)
 
 myManager = SubmissionManager()
-myManager.load('output.txt')
+myManager.load(IMG_DATA_FILEPATH)
 mySocket = socket.socket()
 mySocket.bind(('127.0.0.1', 9876))
 mySocket.listen(5)
 while 1:
     connectedSocket, addr = mySocket.accept()
-    received = connectedSocket.recv(1024)
-    print received
+    received = connectedSocket.recv(1024).split(',')
     # TODO: use the contents of the string array "received"
-    # to invoke the relevant functions in Submission MAnager
-    toSend = "1001"
+    # to invoke the relevant functions in Submission Manager
+    
+    toSend = None
+    if received[0] == 'drawTaskGetImage':
+        toSend = myManager.getAvailableImageToDrawOn(received[1])
+    elif received[0] == 'drawTaskFinishImage':
+        toSend = myManager.drawTaskFinishImage(received[1], received[2])   
+
+    print toSend
     connectedSocket.sendall(toSend)
     connectedSocket.close()
-    myManager.save('output.txt')
+    myManager.save(IMG_DATA_FILEPATH)

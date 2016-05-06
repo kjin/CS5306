@@ -7,7 +7,7 @@
       $data .= "," . $element;
     }
     $mySocket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-    if (socket_connect($mySocket, '127.0.0.1', 9876))
+    if (@socket_connect($mySocket, '127.0.0.1', 9876))
     {
       $buffer = "";
       if (strlen($data) <= 1000)
@@ -23,6 +23,6 @@
         }
       }
     }
-    return "Python server is not running.";
+    error_log("ERROR: Python server is not running.");
   }
 ?>
