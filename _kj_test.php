@@ -27,6 +27,7 @@
         <div id="lc"></div>
       </div>
       <div align="center">
+        <br />
         <button onclick="save()">Submit</button>
       </div>
     </div>
@@ -42,7 +43,7 @@
         x: 0, y: 0, width: imageSize.width, height: imageSize.height
       };
       
-      var userID = 0; // TODO: Dynamically generate or get turker ID
+      var userID = <?php $result = $_GET["workerID"]; echo (isset($result) ? "\"$result\"" : "\"00000\""); ?>;
       var imageID;
       
       var lc;
@@ -50,7 +51,6 @@
 
       function save() {
         var image = lc.getImage({ rect: imageBounds }).toDataURL();
-        window.open(image);
         var newImageID = imageID + 100;
         jQuery.post("drawTaskFinishImage.php?userID=" + userID + "&imageID=" + newImageID, image, onSaveSuccess);
       }
