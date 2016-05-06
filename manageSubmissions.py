@@ -233,3 +233,4 @@ while 1:
     connectedSocket.sendall(toSend)
     connectedSocket.close()
     myManager.save(IMG_DATA_FILEPATH)
+
