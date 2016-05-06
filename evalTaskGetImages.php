@@ -8,7 +8,7 @@
     {
       $numTimes = intval($_GET["numTimes"]);
     }
-    $result = makePythonModuleCall('evalTaskGetImages', [$userID]);
+    $result = makePythonModuleCall('evalTaskGetImages', [$userID,$numTimes]);
     // TODO: Delete this
     if (!$result)
     {
@@ -19,7 +19,7 @@
         {
           $result .= ",";
         }
-        $result .= "4101,4102";
+        $result .= "1001,1002";
       }
     }
     // replace every other comma with a semicolon

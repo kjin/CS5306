@@ -28,10 +28,7 @@
       var strIncomplete = "Please choose an image.";
       var strCode = "Thank you! Please copy the following ID into the token box in Mechanical Turk:";
     
-      var userID =
-      <?php
-        $result = $_GET["workerID"]; echo (isset($result) ? "\"$result\"" : "\"00000\"");
-      ?>;
+      var userID = <?php $result = $_GET["workerID"]; echo (isset($result) ? "\"$result\"" : "\"00000\""); ?>;
       var maxNumComparisons = 10;
       
       var allComparisons = "";

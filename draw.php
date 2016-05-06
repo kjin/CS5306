@@ -8,7 +8,7 @@
 
     <style type="text/css">
       .fs-container {
-        width: 880px;
+        width: 840px;
         margin: auto;
       }
 
@@ -22,13 +22,12 @@
 
   <body onload="load()">
     <div id="whole">
-      <div id="instructions"></div>
+      <div id="instructions" align="center"></div>
       <div class="fs-container">
         <div id="lc"></div>
       </div>
-      <div align="center">
-        <br />
-        <button onclick="save()">Submit</button>
+      <div align="center" id="complete">
+        <button onclick="cancel()">Cancel</button>
       </div>
     </div>
 
@@ -38,6 +37,11 @@
     <script src="literallycanvas/js/literallycanvas.js"></script>
 
     <script type="text/javascript">
+      var strComplete = "A creature is partially finished in the canvas below. Complete the creature.";
+      var strDontComplete = "A creature is partially finished in the canvas below. Add to the creature, but do not complete it.";
+      var strCode = "Thank you! Please copy the following ID into the token box in Mechanical Turk:";
+      var strCancel = "The task has been canceled.";
+    
       var imageSize = {width: 800, height: 600};
       var imageBounds = {
         x: 0, y: 0, width: imageSize.width, height: imageSize.height
@@ -51,12 +55,11 @@
 
       function save() {
         var image = lc.getImage({ rect: imageBounds }).toDataURL();
-        var newImageID = imageID + 100;
-        jQuery.post("drawTaskFinishImage.php?userID=" + userID + "&imageID=" + newImageID, image, onSaveSuccess);
+        jQuery.post("drawTaskFinishImage.php?userID=" + userID + "&imageID=" + imageID, image, displayUniqueToken);
       }
 
-      function onSaveSuccess() {
-        
+      function displayUniqueToken(result) {
+        document.getElementById("whole").innerHTML = strCode + " <b>" + result + "</b>";
       }
 
       function load() {
@@ -64,16 +67,17 @@
       }
 
       function onLoadSuccess(result) {
-        result=4102;
+        // This is the image we upload, NOT the image that is being drawn on
         imageID = parseInt(result);
         if(result[0]=='1'){
-          document.getElementById("instructions").innerHTML = "On the canvas shown below, you see a random part of a creature<br> Complete the creature by drawing in whatever you like!<br>";
+          document.getElementById("instructions").innerHTML = "<b>Instructions: </b>" + strComplete;
         }
         else{
-          document.getElementById("instructions").innerHTML = "On the canvas shown below, you see an incomplete drawing of a creature<br> Contribute to the drawing but do not complete it!<br>";
+          document.getElementById("instructions").innerHTML = "<b>Instructions: </b>" + strDontComplete;
         }
         var backgroundImage = new Image();
-        backgroundImage.src = 'files/'+result+'.png';
+        // Subtract 100 from the image ID to get the image we should be drawing on.
+        backgroundImage.src = 'files/'+(imageID - 100)+'.png';
 
         lc = LC.init(document.getElementById("lc"), {
           imageURLPrefix: 'literallycanvas/img',
@@ -85,6 +89,17 @@
           ]
         });
         
+        document.getElementById("complete").innerHTML += "<button onclick=\"save()\">Submit</button>";
+      }
+      
+      function cancel()
+      {
+        jQuery.get("drawTaskCancelImage.php?userID=" + userID, "", onCancelSuccess);
+      }
+      
+      function onCancelSuccess()
+      {
+        document.getElementById("whole").innerHTML = strCancel;
       }
     </script>
   </body>
