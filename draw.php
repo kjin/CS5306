@@ -52,7 +52,7 @@
       var strPreInstructions = "<b>Instructions:</b> A creature is partially finished in the canvas below. ";
       var strComplete = "Please answer the question below and complete the creature.";
       var strDontComplete = "Please answer the question below and add to the creature, but <b>do not complete it.</b>";
-      var strSufInstructions = "<br />Then click submit at the bottom of the page. <b>You should take at least two minutes but no more than one hour.</b>";
+      var strSufInstructions = "<br />Then click submit at the bottom of the page. <b>You should take at least one minute but no more than one hour.</b>";
       var strCode = "Thank you! Please copy the following code into the token box in Mechanical Turk:";
       var strIncomplete = "Please select your skill level.";
       var strCancel = "The task has been canceled.";
