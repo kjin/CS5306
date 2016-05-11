@@ -56,6 +56,7 @@
       var strCode = "Thank you! Please copy the following code into the token box in Mechanical Turk:";
       var strIncomplete = "Please select your skill level.";
       var strCancel = "The task has been canceled.";
+      var strNoTasks = "All of the images are currently being drawn on. Please check back later.";
     
       var imageSize = {width: 800, height: 600};
       var imageBounds = {
@@ -99,7 +100,11 @@
       function onLoadSuccess(result) {
         // This is the image we upload, NOT the image that is being drawn on
         imageID = parseInt(result);
-        if(result[0]=='1'){
+        if (imageID == -1)
+        {
+          document.getElementById("whole").innerHTML = strNoTasks;
+        }
+        if(result[1]=='1'){
           document.getElementById("instructions").innerHTML = strPreInstructions + strComplete + strSufInstructions;
         }
         else{

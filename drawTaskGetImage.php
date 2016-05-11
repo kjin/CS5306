@@ -7,7 +7,7 @@
     // TODO Delete this
     if (!$result)
     {
-      $result = '1101';
+      $result = '-1';
     }
     echo $result;
   }
