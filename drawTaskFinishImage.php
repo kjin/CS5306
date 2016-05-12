@@ -9,10 +9,14 @@
     $userID = $_GET["userID"];
     $imageID = $_GET["imageID"];
     $skillLevel = $_GET["skillLevel"];
-    echo makePythonModuleCall('drawTaskFinishImage', [$userID, $imageID, $skillLevel]);
+    $result = makePythonModuleCall('drawTaskFinishImage', [$userID, $imageID, $skillLevel]);
+    if (!$result)
+    {
+      echo 'approveme2';
+    }
   }
   else
   {
-    echo 'failure';
+    echo 'approveme1';
   }
 ?>
