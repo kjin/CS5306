@@ -10,10 +10,15 @@
       $preferences = explode(',',$comparison);
       makePythonModuleCall('evalTaskCompare', [$userID, $preferences[0], $preferences[1]]);
     }
-    echo makePythonModuleCall('evalTaskFinish', [$userID]);
+    $result = makePythonModuleCall('evalTaskFinish', [$userID]);
+    echo $result;
+    if (!$result)
+    {
+      echo 'approveme2';
+    }
   }
   else
   {
-    echo 'failure';
+    echo 'approveme1';
   }
 ?>
