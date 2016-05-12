@@ -10,6 +10,7 @@
     $imageID = $_GET["imageID"];
     $skillLevel = $_GET["skillLevel"];
     $result = makePythonModuleCall('drawTaskFinishImage', [$userID, $imageID, $skillLevel]);
+    echo $result;
     if (!$result)
     {
       echo 'approveme2';
