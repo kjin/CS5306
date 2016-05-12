@@ -2,8 +2,8 @@ import socket
 import time
 import hashlib
 
-# number of seconds that image will be locked, 60 min
-MAX_DRAWING_TIME = 3600 
+# number of seconds that image will be locked, 20 min
+MAX_DRAWING_TIME = 1200
 IMG_DATA_FILEPATH = 'imgdata.txt'
 EVAL_DATA_FILEPATH = 'evaldata.txt'
 NO_IMAGE = '-1'
